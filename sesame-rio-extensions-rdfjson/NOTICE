@@ -1,0 +1,10 @@
+Copyright (C) 2012 Peter Ansell
+
+See LICENSE for license information about the Apache-2.0 license 
+relevant to the modules produced by this project.
+
+The Sesame Rio Extensions RDF/JSON parser/writer library was derived from Sesame Tools:
+
+Sesame Tools, Copyright (C) 2010-2012 Joshua Shinavier and Peter Ansell.
+
+Sesame Tools was released under the MIT License, which can be found in LICENSE-Original.txt
