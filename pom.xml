@@ -1,6 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    
+
     <!-- Copyright 2012 Peter Ansell -->
     <!-- Licensed under the Apache License, Version 2.0 (the "License"); -->
     <!-- you may not use this file except in compliance with the License. -->
@@ -30,6 +30,8 @@
     <description>Extensions for OpenRDF Sesame Rio, including RDF Parsers and RDF Writers</description>
     <url>https://github.com/ansell/sesame-rio-extensions</url>
 
+    <!-- Sub modules may have different licenses, -->
+    <!-- or have additional Copyright notices that must be displayed. -->
     <licenses>
         <license>
             <name>Apache-2.0 License</name>
