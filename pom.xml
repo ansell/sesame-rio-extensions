@@ -1,5 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <!-- Copyright 2012-2013 Peter Ansell -->
     <!-- Licensed under the Apache License, Version 2.0 (the "License"); -->
@@ -24,7 +23,7 @@
 
     <groupId>com.github.ansell.sesame-rio-extensions</groupId>
     <artifactId>sesame-rio-extensions-parent</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1</version>
     <packaging>pom</packaging>
     <name>Sesame Rio Extensions</name>
     <description>Extensions for OpenRDF Sesame Rio, including RDF Parsers and RDF Writers</description>
@@ -44,7 +43,8 @@
         <connection>scm:git:git://github.com/ansell/sesame-rio-extensions.git</connection>
         <developerConnection>scm:git:git@github.com:ansell/sesame-rio-extensions.git</developerConnection>
         <url>https://github.com/ansell/sesame-rio-extensions</url>
-    </scm>
+      <tag>sesame-rio-extensions-0.1</tag>
+  </scm>
 
     <developers>
         <developer>
