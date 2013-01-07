@@ -3,6 +3,7 @@ package net.fortytwo.sesametools.rdfjson;
 import java.io.StringWriter;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
@@ -32,6 +33,7 @@ public class RDFJSONFactoriesTest
         Assert.assertTrue(writer instanceof RDFJSONWriter);
     }
     
+    @Ignore
     @Test
     public void testParserFactoryRegisteredAlternate()
     {
@@ -41,6 +43,7 @@ public class RDFJSONFactoriesTest
         Assert.assertTrue(parser instanceof RDFJSONParser);
     }
     
+    @Ignore
     @Test
     public void testWriterFactoryRegisteredAlternate()
     {
