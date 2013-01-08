@@ -4,6 +4,7 @@
 package com.github.ansell.sesamerioextensions.api;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.openrdf.rio.RDFFormat;
@@ -16,6 +17,22 @@ import org.openrdf.rio.RDFFormat;
  */
 public class RDFFormatExtensions extends RDFFormat
 {
+    /**
+     * The Talis <a
+     * href="http://dvcs.w3.org/hg/rdf/raw-file/default/rdf-json/index.html">RDF/JSON</a> file
+     * format, an RDF serialization format that supports recording of named graphs.
+     * <p>
+     * The file extension <code>.rj</code> is recommended for RDF/JSON documents. The media type is
+     * <code>application/rdf+json</code> and the encoding is UTF-8.
+     * </p>
+     * 
+     * NOTE: This format supports both application/json as a content type, and .json as an
+     * extension, in addition to the specification defined in RDFFormat.RDFJSON.
+     * 
+     * @see http://dvcs.w3.org/hg/rdf/raw-file/default/rdf-json/index.html
+     */
+    public static final RDFFormat RDFJSONPREFERRED = new RDFFormat("RDF/JSON", Arrays.asList("application/rdf+json",
+            "application/json"), Charset.forName("UTF-8"), Arrays.asList("rj", "json"), false, true);
     
     /**
      * Creates a new RDFFormat object.
