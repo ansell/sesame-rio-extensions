@@ -16,7 +16,7 @@
     <parent>
         <groupId>com.github.ansell.sesame-rio-extensions</groupId>
         <artifactId>sesame-rio-extensions-parent</artifactId>
-        <version>0.2-SNAPSHOT</version>
+        <version>0.2</version>
     </parent>
     <artifactId>sesame-rio-extensions-api</artifactId>
     <name>Sesame Rio Extensions API</name>
