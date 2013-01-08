@@ -50,7 +50,7 @@ public class RDFJSONParser implements RDFParser
     @Override
     public RDFFormat getRDFFormat()
     {
-        return RDFFormatExtensions.RDFJSON;
+        return RDFFormatExtensions.RDFJSONPREFERRED;
     }
     
     @Override

@@ -25,7 +25,7 @@ public class RDFJSONParserFactory implements RDFParserFactory
     @Override
     public RDFFormat getRDFFormat()
     {
-        return RDFFormatExtensions.RDFJSON;
+        return RDFFormatExtensions.RDFJSONPREFERRED;
     }
     
 }

@@ -22,7 +22,7 @@ public class RDFJSONWriterFactory implements RDFWriterFactory
     @Override
     public RDFFormat getRDFFormat()
     {
-        return RDFFormatExtensions.RDFJSON;
+        return RDFFormatExtensions.RDFJSONPREFERRED;
     }
     
     @Override
