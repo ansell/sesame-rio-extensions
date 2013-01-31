@@ -31,7 +31,7 @@ public class RDFFormatExtensions extends RDFFormat
      * 
      * @see http://dvcs.w3.org/hg/rdf/raw-file/default/rdf-json/index.html
      */
-    public static final RDFFormat RDFJSONPREFERRED = new RDFFormat("RDF/JSON", Arrays.asList("application/rdf+json",
+    public static final RDFFormat RDFJSONPREFERRED = new RDFFormat("RDF/JSON-preferred", Arrays.asList("application/rdf+json",
             "application/json"), Charset.forName("UTF-8"), Arrays.asList("rj", "json"), false, true);
     
     static
