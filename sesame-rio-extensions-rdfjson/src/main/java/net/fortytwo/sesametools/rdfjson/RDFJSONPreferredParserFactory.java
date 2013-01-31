@@ -13,7 +13,7 @@ import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
  * @author fkleedorfer
  */
 @MetaInfServices(RDFParserFactory.class)
-public class RDFJSONParserFactory implements RDFParserFactory
+public class RDFJSONPreferredParserFactory implements RDFParserFactory
 {
     
     @Override

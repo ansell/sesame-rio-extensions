@@ -16,7 +16,7 @@ import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
  * @author fkleedorfer
  */
 @MetaInfServices(RDFWriterFactory.class)
-public class RDFJSONWriterFactory implements RDFWriterFactory
+public class RDFJSONPreferredWriterFactory implements RDFWriterFactory
 {
     
     @Override
