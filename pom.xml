@@ -23,7 +23,7 @@
 
     <groupId>com.github.ansell.sesame-rio-extensions</groupId>
     <artifactId>sesame-rio-extensions-parent</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
     <packaging>pom</packaging>
     <name>Sesame Rio Extensions</name>
     <description>Extensions for OpenRDF Sesame Rio, including RDF Parsers and RDF Writers</description>
@@ -43,7 +43,7 @@
         <connection>scm:git:git://github.com/ansell/sesame-rio-extensions.git</connection>
         <developerConnection>scm:git:git@github.com:ansell/sesame-rio-extensions.git</developerConnection>
         <url>https://github.com/ansell/sesame-rio-extensions</url>
-      <tag>HEAD</tag>
+      <tag>sesame-rio-extensions-0.3</tag>
   </scm>
 
     <developers>
