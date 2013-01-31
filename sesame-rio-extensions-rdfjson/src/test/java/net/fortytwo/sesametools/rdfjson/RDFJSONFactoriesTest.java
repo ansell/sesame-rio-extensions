@@ -33,7 +33,6 @@ public class RDFJSONFactoriesTest
         Assert.assertTrue(writer instanceof RDFJSONWriter);
     }
     
-    @Ignore
     @Test
     public void testParserFactoryRegisteredAlternate()
     {
@@ -43,7 +42,6 @@ public class RDFJSONFactoriesTest
         Assert.assertTrue(parser instanceof RDFJSONParser);
     }
     
-    @Ignore
     @Test
     public void testWriterFactoryRegisteredAlternate()
     {
