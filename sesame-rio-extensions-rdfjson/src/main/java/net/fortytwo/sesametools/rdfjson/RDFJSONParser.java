@@ -8,18 +8,24 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.rio.ParseErrorListener;
 import org.openrdf.rio.ParseLocationListener;
 import org.openrdf.rio.ParserConfig;
+import org.openrdf.rio.ParserSetting;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.helpers.BasicParserSettings;
+import org.openrdf.rio.helpers.RDFParserBase;
 
 import se.kmr.scam.rest.util.RDFJSON;
 
@@ -159,5 +165,18 @@ public class RDFJSONParser implements RDFParser
             writer.write(buffer, 0, n);
         }
         return writer.toString();
+    }
+    
+    @Override
+    public Collection<ParserSetting<?>> getSupportedSettings()
+    {
+        Collection<ParserSetting<?>> result = new ArrayList<ParserSetting<?>>(4);
+
+        result.add(BasicParserSettings.DATATYPE_HANDLING);
+        result.add(BasicParserSettings.PRESERVE_BNODE_IDS);
+        result.add(BasicParserSettings.STOP_AT_FIRST_ERROR);
+        result.add(BasicParserSettings.VERIFY_DATA);
+
+        return result;
     }
 }
