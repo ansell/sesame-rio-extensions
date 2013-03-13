@@ -1,5 +1,8 @@
 package net.fortytwo.sesametools.rdfjson;
 
+import java.io.InputStream;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Iterator;
 
 import net.fortytwo.sesametools.rdfjson.RDFJSONTestConstants.FOAF;
@@ -8,8 +11,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openrdf.model.Model;
+import org.openrdf.model.Statement;
+import org.openrdf.model.impl.LinkedHashModel;
+import org.openrdf.model.util.ModelUtil;
 import org.openrdf.model.vocabulary.OWL;
 import org.openrdf.model.vocabulary.RDF;
+import org.openrdf.rio.helpers.StatementCollector;
 
 /**
  * Tests the RDF/JSON writer by way of the RDF/JSON parser.
@@ -97,4 +105,40 @@ public class RDFJSONWriterTest
         final JSONObject j = RDFJSONTestUtils.parseXMLAndWriteJson("example3.xml");
         // TODO: add tests to check the results
     }
+    
+    @Test
+    public void testRdfJsonParseRdfJsonWrite() throws Exception
+    {
+        final RDFJSONParser p = new RDFJSONParser();
+        final Model model = new LinkedHashModel();
+        p.setRDFHandler(new StatementCollector(model));
+        
+        final InputStream in = RDFJSONParser.class.getResourceAsStream("example2.json");
+        try
+        {
+            p.parse(in, RDFJSONTestConstants.BASE_URI);
+        }
+        finally
+        {
+            in.close();
+        }
+        
+        final StringWriter sw = new StringWriter();
+        final RDFJSONWriter w = new RDFJSONWriter(sw);
+        w.startRDF();
+        for(final Statement nextStatement : model)
+        {
+            w.handleStatement(nextStatement);
+        }
+        w.endRDF();
+        
+        final RDFJSONParser comparisonParser = new RDFJSONParser();
+        final Model comparisonModel = new LinkedHashModel();
+        comparisonParser.setRDFHandler(new StatementCollector(comparisonModel));
+        
+        comparisonParser.parse(new StringReader(sw.toString()), RDFJSONTestConstants.BASE_URI);
+        
+        Assert.assertTrue(ModelUtil.equals(model, comparisonModel));
+    }
+    
 }

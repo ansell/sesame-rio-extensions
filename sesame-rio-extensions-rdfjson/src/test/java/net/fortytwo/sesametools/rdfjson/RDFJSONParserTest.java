@@ -1,7 +1,6 @@
 package net.fortytwo.sesametools.rdfjson;
 
 import java.io.InputStream;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
@@ -11,7 +10,9 @@ import net.fortytwo.sesametools.rdfjson.RDFJSONTestConstants.FOAF;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
+import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.vocabulary.OWL;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.XMLSchema;
@@ -23,10 +24,9 @@ import org.openrdf.rio.helpers.StatementCollector;
 public class RDFJSONParserTest
 {
     
-    private Collection<Statement> g;
+    private Model g;
     
-    protected void assertExpected(final Collection<Statement> graph, final Statement... expectedStatements)
-        throws Exception
+    protected void assertExpected(final Model graph, final Statement... expectedStatements) throws Exception
     {
         final Set<Statement> expected = new TreeSet<Statement>(new StatementComparator());
         Collections.addAll(expected, expectedStatements);
@@ -58,11 +58,11 @@ public class RDFJSONParserTest
         this.g = null;
     }
     
-    protected Collection<Statement> parseToGraph(final String fileName) throws Exception
+    protected Model parseToGraph(final String fileName) throws Exception
     {
         final RDFJSONParser p = new RDFJSONParser();
-        final StatementCollector c = new StatementCollector();
-        p.setRDFHandler(c);
+        final Model model = new LinkedHashModel();
+        p.setRDFHandler(new StatementCollector(model));
         
         final InputStream in = RDFJSONParser.class.getResourceAsStream(fileName);
         try
@@ -74,7 +74,7 @@ public class RDFJSONParserTest
             in.close();
         }
         
-        return c.getStatements();
+        return model;
     }
     
     @Test
