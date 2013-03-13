@@ -103,9 +103,10 @@ public class RDFJSONParserTest
     {
         this.g = this.parseToGraph("example2.json");
         
-        // for (Statement st : g) {
-        // System.out.println(st);
-        // }
+        for(Statement st : g)
+        {
+            System.out.println(st);
+        }
         
         Assert.assertEquals(6, this.g.size());
     }
