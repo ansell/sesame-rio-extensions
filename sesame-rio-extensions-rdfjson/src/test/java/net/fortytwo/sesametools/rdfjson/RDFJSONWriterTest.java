@@ -100,20 +100,13 @@ public class RDFJSONWriterTest
     }
     
     @Test
-    public void testRdfXmlParseRdfJsonWrite() throws Exception
-    {
-        final JSONObject j = RDFJSONTestUtils.parseXMLAndWriteJson("example3.xml");
-        // TODO: add tests to check the results
-    }
-    
-    @Test
     public void testRdfJsonParseRdfJsonWrite() throws Exception
     {
         final RDFJSONParser p = new RDFJSONParser();
         final Model model = new LinkedHashModel();
         p.setRDFHandler(new StatementCollector(model));
         
-        final InputStream in = RDFJSONParser.class.getResourceAsStream("example2.json");
+        final InputStream in = RDFJSONParser.class.getResourceAsStream("example4.json");
         try
         {
             p.parse(in, RDFJSONTestConstants.BASE_URI);
@@ -140,7 +133,7 @@ public class RDFJSONWriterTest
         
         comparisonParser.parse(new StringReader(sw.toString()), RDFJSONTestConstants.BASE_URI);
         
-        for(Statement nextStatement : model)
+        for(final Statement nextStatement : model)
         {
             if(!comparisonModel.contains(nextStatement))
             {
@@ -148,7 +141,7 @@ public class RDFJSONWriterTest
             }
         }
         
-        for(Statement nextStatement : comparisonModel)
+        for(final Statement nextStatement : comparisonModel)
         {
             if(!model.contains(nextStatement))
             {
@@ -156,7 +149,18 @@ public class RDFJSONWriterTest
             }
         }
         
+        Assert.assertEquals(2, model.size());
+        // FIXME: In this corner case an extra triple with a null context is being emitted
+        Assert.assertEquals(2, comparisonModel.size());
+        
         Assert.assertTrue(ModelUtil.equals(model, comparisonModel));
+    }
+    
+    @Test
+    public void testRdfXmlParseRdfJsonWrite() throws Exception
+    {
+        final JSONObject j = RDFJSONTestUtils.parseXMLAndWriteJson("example3.xml");
+        // TODO: add tests to check the results
     }
     
 }

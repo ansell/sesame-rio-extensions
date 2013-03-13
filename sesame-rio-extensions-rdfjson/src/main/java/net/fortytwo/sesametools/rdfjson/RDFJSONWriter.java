@@ -5,10 +5,10 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.util.Set;
-import java.util.TreeSet;
 
+import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
+import org.openrdf.model.impl.TreeModel;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;
@@ -27,7 +27,7 @@ public class RDFJSONWriter implements RDFWriter
 {
     
     private final Writer writer;
-    private Set<Statement> graph;
+    private Model graph;
     
     public RDFJSONWriter(final OutputStream out)
     {
@@ -42,7 +42,7 @@ public class RDFJSONWriter implements RDFWriter
     @Override
     public void endRDF() throws RDFHandlerException
     {
-        RDFJSON.graphToRdfJsonPreordered(this.graph, this.writer);
+        RDFJSON.modelToRdfJson(this.graph, this.writer);
         try
         {
             this.writer.flush();
@@ -81,6 +81,9 @@ public class RDFJSONWriter implements RDFWriter
     @Override
     public void startRDF() throws RDFHandlerException
     {
-        this.graph = new TreeSet<Statement>(new StatementComparator());
+        // this.graph = new TreeSet<Statement>(new StatementComparator());
+        // TreeModel extends SortedSet<Statement>, which is what TreeSet<Statement> was being used
+        // for previously
+        this.graph = new TreeModel();
     }
 }

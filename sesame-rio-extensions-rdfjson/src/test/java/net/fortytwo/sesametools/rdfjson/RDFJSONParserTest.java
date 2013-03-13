@@ -12,7 +12,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
+import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.LinkedHashModel;
+import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.vocabulary.OWL;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.XMLSchema;
@@ -20,10 +22,11 @@ import org.openrdf.rio.helpers.StatementCollector;
 
 /**
  * @author Joshua Shinavier (http://fortytwo.net).
+ * @author Peter Ansell p_ansell@yahoo.com
  */
 public class RDFJSONParserTest
 {
-    
+    private final ValueFactory vf = ValueFactoryImpl.getInstance();
     private Model g;
     
     protected void assertExpected(final Model graph, final Statement... expectedStatements) throws Exception
@@ -86,16 +89,18 @@ public class RDFJSONParserTest
         
         Assert.assertEquals(6, this.g.size());
         
-        this.assertExpected(this.g, RDFJSONTestConstants.vf.createStatement(RDFJSONTestConstants.ARTHUR, RDF.TYPE,
-                FOAF.PERSON), RDFJSONTestConstants.vf.createStatement(RDFJSONTestConstants.ARTHUR, RDF.TYPE,
-                RDFJSONTestConstants.vf.createURI(OWL.NAMESPACE + "Thing"), null), RDFJSONTestConstants.vf
-                .createStatement(RDFJSONTestConstants.ARTHUR, RDF.TYPE,
-                        RDFJSONTestConstants.vf.createURI(OWL.NAMESPACE + "Thing"), RDFJSONTestConstants.GRAPH1),
-                RDFJSONTestConstants.vf.createStatement(RDFJSONTestConstants.ARTHUR, FOAF.NAME,
-                        RDFJSONTestConstants.vf.createLiteral("Arthur Dent", "en")), RDFJSONTestConstants.vf
-                        .createStatement(RDFJSONTestConstants.ARTHUR, FOAF.KNOWS, RDFJSONTestConstants.P1),
-                RDFJSONTestConstants.vf.createStatement(RDFJSONTestConstants.P1, FOAF.NAME,
-                        RDFJSONTestConstants.vf.createLiteral("Ford Prefect", XMLSchema.STRING)));
+        this.assertExpected(
+                this.g,
+                this.vf.createStatement(RDFJSONTestConstants.ARTHUR, RDF.TYPE, FOAF.PERSON),
+                this.vf.createStatement(RDFJSONTestConstants.ARTHUR, RDF.TYPE,
+                        this.vf.createURI(OWL.NAMESPACE + "Thing"), null),
+                this.vf.createStatement(RDFJSONTestConstants.ARTHUR, RDF.TYPE,
+                        this.vf.createURI(OWL.NAMESPACE + "Thing"), RDFJSONTestConstants.GRAPH1),
+                this.vf.createStatement(RDFJSONTestConstants.ARTHUR, FOAF.NAME,
+                        this.vf.createLiteral("Arthur Dent", "en")),
+                this.vf.createStatement(RDFJSONTestConstants.ARTHUR, FOAF.KNOWS, RDFJSONTestConstants.P1),
+                this.vf.createStatement(RDFJSONTestConstants.P1, FOAF.NAME,
+                        this.vf.createLiteral("Ford Prefect", XMLSchema.STRING)));
     }
     
     @Test
@@ -103,7 +108,7 @@ public class RDFJSONParserTest
     {
         this.g = this.parseToGraph("example2.json");
         
-        for(Statement st : g)
+        for(final Statement st : this.g)
         {
             System.out.println(st);
         }

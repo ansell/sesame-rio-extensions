@@ -8,8 +8,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
@@ -17,11 +15,12 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.openrdf.model.BNode;
+import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openrdf.model.impl.TreeModel;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,17 +61,6 @@ public class RDFJSONUnitTest
     }
     
     /**
-     * Test method for {@link se.kmr.scam.rest.util.RDFJSON#graphToRdfJsonPreordered(java.util.Set)}
-     * .
-     */
-    @Test
-    @Ignore
-    public void testGraphToRdfJsonPreorderedSetOfStatement()
-    {
-        Assert.fail("Not yet implemented"); // TODO
-    }
-    
-    /**
      * Test method for
      * {@link se.kmr.scam.rest.util.RDFJSON#graphToRdfJsonPreordered(java.util.Set, java.io.Writer)}
      * .
@@ -80,9 +68,10 @@ public class RDFJSONUnitTest
      * @throws JSONException
      */
     @Test
-    public void testGraphToRdfJsonPreorderedSetOfStatementWriter() throws JSONException
+    public void testModelToRdfJsonPreorderedSetOfStatementWriter() throws JSONException
     {
-        final Set<Statement> testStatements = new TreeSet<Statement>(new StatementComparator());
+        // final Set<Statement> testStatements = new TreeSet<Statement>(new StatementComparator());
+        final Model testStatements = new TreeModel();
         final ValueFactoryImpl vf = ValueFactoryImpl.getInstance();
         
         final BNode testBNode1 = vf.createBNode();
@@ -144,7 +133,7 @@ public class RDFJSONUnitTest
         Assert.assertEquals(testStatement9, testStatementIterator.next());
         Assert.assertTrue(testStatementIterator.hasNext());
         
-        final Writer testWriter2 = RDFJSON.graphToRdfJsonPreordered(testStatements, this.testWriter);
+        final Writer testWriter2 = RDFJSON.modelToRdfJson(testStatements, this.testWriter);
         
         // The returned writer should be the same as the one that was sent in
         Assert.assertEquals(this.testWriter, testWriter2);

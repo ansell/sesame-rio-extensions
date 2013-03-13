@@ -2,9 +2,7 @@ package se.kmr.scam.rest.util;
 
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Set;
 
 import org.json.JSONArray;
@@ -14,7 +12,6 @@ import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Model;
 import org.openrdf.model.Resource;
-import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
@@ -28,11 +25,10 @@ import org.slf4j.LoggerFactory;
  * 
  * @author Hannes Ebner <hebner@kth.se>
  * @author Joshua Shinavier
- * @author Peter Ansell
+ * @author Peter Ansell p_ansell@yahoo.com
  */
 public class RDFJSON
 {
-    
     private static final String STRING_NULL = "null";
     private static final String STRING_GRAPHS = "graphs";
     private static final String STRING_URI = "uri";
@@ -101,7 +97,9 @@ public class RDFJSON
         
         // if there is a context, and null is not the only context,
         // then, output the contexts for this object
-        if(contexts.length() > 0 && !(contexts.length() == 1 && contexts.isNull(0)))
+        // Null context, or inherited from a document context, is the assumed value for the context
+        // in this case
+        if(contexts != null && !(contexts.length() == 1 && contexts.isNull(0)))
         {
             valueObj.put(RDFJSON.STRING_GRAPHS, contexts);
         }
@@ -109,20 +107,18 @@ public class RDFJSON
     }
     
     /**
-     * Outputs an ordered set of Statements directly to JSON
+     * Outputs a {@link Model} directly to JSON.
      * 
      * @param graph
-     *            A Set of Statements that are preordered in the order
-     *            subject>predicate>object>context so that it can be output directly without any
-     *            further checks
+     *            A model containing all of the statements to be rendered to RDF/JSON.
      * 
      * @return An RDF/JSON string if successful, otherwise null.
      */
-    public static String graphToRdfJsonPreordered(final Set<Statement> graph)
+    public static String modelToRdfJson(final Model graph)
     {
         final Writer result = new StringWriter();
         
-        if(RDFJSON.graphToRdfJsonPreordered(graph, result) == null)
+        if(RDFJSON.modelToRdfJson(graph, result) == null)
         {
             return null;
         }
@@ -133,21 +129,16 @@ public class RDFJSON
     }
     
     /**
-     * Outputs an ordered set of Statements directly to JSON
-     * 
-     * NOTE: The statements must be ordered by a comparator that orders null before other values, or
-     * the contexts may not be written correctly
+     * Outputs a {@link Model} directly to JSON.
      * 
      * @param graph
-     *            A Set of Statements that are preordered in the order
-     *            subject>predicate>object>context so that it can be output directly without any
-     *            further checks
+     *            A model containing all of the statements to be rendered to RDF/JSON.
      * @param writer
      *            The output writer to use, or null to use a new StringWriter.
      * 
      * @return An RDF/JSON string if successful, otherwise null.
      */
-    public static Writer graphToRdfJsonPreordered(final Set<Statement> graph, Writer writer)
+    public static Writer modelToRdfJson(final Model graph, Writer writer)
     {
         if(writer == null)
         {
@@ -157,145 +148,37 @@ public class RDFJSON
         final JSONObject result = new JSONObject();
         try
         {
-            Resource lastSubject = null;
-            URI lastPredicate = null;
-            Value lastObject = null;
-            Resource lastContext = null;
-            
-            JSONObject predicateArray = new JSONObject();
-            JSONArray objectArray = new JSONArray();
-            JSONArray contextArray = new JSONArray();
-            
-            final Iterator<Statement> iterator = graph.iterator();
-            
-            while(iterator.hasNext())
+            for(final Resource nextSubject : graph.subjects())
             {
-                final Statement nextStatement = iterator.next();
-                
-                // Dump everything if the subject changes after the first iteration
-                if(lastSubject != null && !nextStatement.getSubject().equals(lastSubject))
+                final JSONObject predicateArray = new JSONObject();
+                for(final URI nextPredicate : graph.filter(nextSubject, null, null).predicates())
                 {
-                    // ==================================================
-                    // Dump the last variables starting from the context
-                    // NOTE: This only works because StatementComparator orders nulls before all
-                    // other values
-                    if(lastContext != null || contextArray.length() == 0)
+                    final JSONArray objectArray = new JSONArray();
+                    for(final Value nextObject : graph.filter(nextSubject, nextPredicate, null).objects())
                     {
-                        contextArray.put(contextArray.length(), lastContext);
-                    }
-                    RDFJSON.addObjectToArray(lastObject, objectArray, contextArray);
-                    predicateArray.put(lastPredicate.stringValue(), objectArray);
-                    result.put(RDFJSON.resourceToString(lastSubject), predicateArray);
-                    // ==================================================
-                    
-                    // ==================================================
-                    // Recreate the relevant temporary objects, now that
-                    // they have been stored with the results
-                    predicateArray = new JSONObject();
-                    objectArray = new JSONArray();
-                    contextArray = new JSONArray();
-                    // ==================================================
-                    
-                    // ==================================================
-                    // Change all of the pointers for the last objects over
-                    lastSubject = nextStatement.getSubject();
-                    lastPredicate = nextStatement.getPredicate();
-                    lastObject = nextStatement.getObject();
-                    lastContext = nextStatement.getContext();
-                    // ==================================================
-                }
-                else
-                {
-                    lastSubject = nextStatement.getSubject();
-                    
-                    // Add the lastPredicate when it changes, as we know we have all of the objects
-                    // and their related contexts for the last predicate now
-                    if(lastPredicate != null && !nextStatement.getPredicate().equals(lastPredicate))
-                    {
-                        // ==================================================
-                        // Dump the last variables starting from the context
-                        // NOTE: This only works because StatementComparator orders nulls before all
-                        // other values
-                        if(lastContext != null || contextArray.length() == 0)
+                        // contexts are optional, so this may return empty in some scenarios
+                        // depending on the interpretation of the way contexts work
+                        final Set<Resource> contexts = graph.filter(nextSubject, nextPredicate, nextObject).contexts();
+                        
+                        if(contexts.isEmpty() || (contexts.size() == 1 && contexts.iterator().next() == null))
                         {
-                            contextArray.put(contextArray.length(), lastContext);
-                        }
-                        RDFJSON.addObjectToArray(lastObject, objectArray, contextArray);
-                        predicateArray.put(lastPredicate.stringValue(), objectArray);
-                        // ==================================================
-                        
-                        // ==================================================
-                        // Recreate the relevant temporary objects, now that
-                        // they have been stored with the last predicate
-                        objectArray = new JSONArray();
-                        contextArray = new JSONArray();
-                        // ==================================================
-                        
-                        // ==================================================
-                        // Change the relevant pointers for the last objects over
-                        lastPredicate = nextStatement.getPredicate();
-                        lastObject = nextStatement.getObject();
-                        lastContext = nextStatement.getContext();
-                        // ==================================================
-                    }
-                    else
-                    {
-                        lastPredicate = nextStatement.getPredicate();
-                        
-                        // Add the lastObject to objectArray when it changes, as we know we have all
-                        // of the contexts for the object then
-                        if(lastObject != null && !nextStatement.getObject().equals(lastObject))
-                        {
-                            // ==================================================
-                            // Dump the last variables starting from the context
-                            // NOTE: This only works because StatementComparator orders nulls before
-                            // all other values
-                            if(lastContext != null || contextArray.length() == 0)
-                            {
-                                // Add the lastContext to contextArray
-                                contextArray.put(contextArray.length(), lastContext);
-                            }
-                            RDFJSON.addObjectToArray(lastObject, objectArray, contextArray);
-                            // ==================================================
-                            
-                            // ==================================================
-                            // Recreate the temporary context array, now that
-                            // they have been stored with the last object
-                            contextArray = new JSONArray();
-                            // ==================================================
-                            
-                            // ==================================================
-                            // Change the relevant pointers for the last objects over
-                            lastObject = nextStatement.getObject();
-                            lastContext = nextStatement.getContext();
-                            // ==================================================
+                            RDFJSON.addObjectToArray(nextObject, objectArray, null);
                         }
                         else
                         {
-                            lastObject = nextStatement.getObject();
+                            final JSONArray contextArray = new JSONArray();
                             
-                            // add the next context for the current object
-                            contextArray.put(contextArray.length(), lastContext);
+                            for(final Resource nextContext : contexts)
+                            {
+                                contextArray.put(nextContext);
+                            }
                             
-                            lastContext = nextStatement.getContext();
+                            RDFJSON.addObjectToArray(nextObject, objectArray, contextArray);
                         }
                     }
+                    predicateArray.put(nextPredicate.stringValue(), objectArray);
                 }
-            }
-            
-            // the last subject/predicate/object/context will never get pushed inside the loop
-            // above, so push it here if we went into the loop
-            if(graph.size() > 0)
-            {
-                // NOTE: This only works because StatementComparator orders nulls before all other
-                // values
-                if(lastContext != null || contextArray.length() == 0)
-                {
-                    contextArray.put(contextArray.length(), lastContext);
-                }
-                RDFJSON.addObjectToArray(lastObject, objectArray, contextArray);
-                predicateArray.put(lastPredicate.stringValue(), objectArray);
-                result.put(RDFJSON.resourceToString(lastSubject), predicateArray);
+                result.put(RDFJSON.resourceToString(nextSubject), predicateArray);
             }
             
             result.write(writer);
@@ -390,7 +273,7 @@ public class RDFJSON
                         if(obj.has(RDFJSON.STRING_GRAPHS))
                         {
                             final JSONArray a = obj.getJSONArray(RDFJSON.STRING_GRAPHS);
-                            System.out.println("a.length() = " + a.length());
+                            // System.out.println("a.length() = " + a.length());
                             for(int j = 0; j < a.length(); j++)
                             {
                                 // Note: any nulls here will result in statements in the default
@@ -412,6 +295,8 @@ public class RDFJSON
         }
         catch(final JSONException e)
         {
+            // FIXME: Should be able to propagate the exception up from here and handle it somewhere
+            // else without any difficulty
             RDFJSON.log.error(e.getMessage(), e);
             return null;
         }
