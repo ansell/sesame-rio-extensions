@@ -136,7 +136,25 @@ public class RDFJSONWriterTest
         final Model comparisonModel = new LinkedHashModel();
         comparisonParser.setRDFHandler(new StatementCollector(comparisonModel));
         
+        System.err.println(sw.toString());
+        
         comparisonParser.parse(new StringReader(sw.toString()), RDFJSONTestConstants.BASE_URI);
+        
+        for(Statement nextStatement : model)
+        {
+            if(!comparisonModel.contains(nextStatement))
+            {
+                System.err.println(nextStatement);
+            }
+        }
+        
+        for(Statement nextStatement : comparisonModel)
+        {
+            if(!model.contains(nextStatement))
+            {
+                System.err.println(nextStatement);
+            }
+        }
         
         Assert.assertTrue(ModelUtil.equals(model, comparisonModel));
     }
