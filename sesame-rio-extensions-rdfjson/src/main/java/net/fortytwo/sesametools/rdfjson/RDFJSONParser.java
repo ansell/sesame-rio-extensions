@@ -95,9 +95,7 @@ public class RDFJSONParser implements RDFParser
     @Override
     public void setDatatypeHandling(final DatatypeHandling datatypeHandling)
     {
-        this.config =
-                new ParserConfig(this.config.verifyData(), this.config.stopAtFirstError(),
-                        this.config.isPreserveBNodeIDs(), datatypeHandling);
+        this.config.set(BasicParserSettings.DATATYPE_HANDLING, datatypeHandling);
     }
     
     @Override
@@ -121,9 +119,7 @@ public class RDFJSONParser implements RDFParser
     @Override
     public void setPreserveBNodeIDs(final boolean preserveBNodeIDs)
     {
-        this.config =
-                new ParserConfig(this.config.verifyData(), this.config.stopAtFirstError(), preserveBNodeIDs,
-                        this.config.datatypeHandling());
+        this.config.set(BasicParserSettings.PRESERVE_BNODE_IDS, preserveBNodeIDs);
     }
     
     @Override
@@ -135,9 +131,7 @@ public class RDFJSONParser implements RDFParser
     @Override
     public void setStopAtFirstError(final boolean stopAtFirstError)
     {
-        this.config =
-                new ParserConfig(this.config.verifyData(), stopAtFirstError, this.config.isPreserveBNodeIDs(),
-                        this.config.datatypeHandling());
+        this.config.set(BasicParserSettings.STOP_AT_FIRST_ERROR, stopAtFirstError);
     }
     
     @Override
@@ -149,9 +143,7 @@ public class RDFJSONParser implements RDFParser
     @Override
     public void setVerifyData(final boolean verifyData)
     {
-        this.config =
-                new ParserConfig(verifyData, this.config.stopAtFirstError(), this.config.isPreserveBNodeIDs(),
-                        this.config.datatypeHandling());
+        this.config.set(BasicParserSettings.VERIFY_DATA, verifyData);
     }
     
     private String toString(final Reader reader) throws IOException
@@ -171,12 +163,12 @@ public class RDFJSONParser implements RDFParser
     public Collection<ParserSetting<?>> getSupportedSettings()
     {
         Collection<ParserSetting<?>> result = new ArrayList<ParserSetting<?>>(4);
-
+        
         result.add(BasicParserSettings.DATATYPE_HANDLING);
         result.add(BasicParserSettings.PRESERVE_BNODE_IDS);
         result.add(BasicParserSettings.STOP_AT_FIRST_ERROR);
         result.add(BasicParserSettings.VERIFY_DATA);
-
+        
         return result;
     }
 }
