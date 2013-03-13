@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.rio.ParseErrorListener;
@@ -77,7 +78,7 @@ public class RDFJSONParser implements RDFParser
         }
         
         final String s = this.toString(reader);
-        final Collection<Statement> g = RDFJSON.rdfJsonToGraph(s);
+        final Model g = RDFJSON.rdfJsonToGraph(s);
         
         if(g == null)
         {

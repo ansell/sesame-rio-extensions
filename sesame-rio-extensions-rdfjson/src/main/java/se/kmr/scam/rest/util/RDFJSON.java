@@ -12,11 +12,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.openrdf.model.BNode;
 import org.openrdf.model.Literal;
+import org.openrdf.model.Model;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -314,9 +316,9 @@ public class RDFJSON
      *            The RDF/JSON string to be parsed and converted into a Collection<Statement>.
      * @return A Collection<Statement> if successful, otherwise null.
      */
-    public static Collection<Statement> rdfJsonToGraph(final String json)
+    public static Model rdfJsonToGraph(final String json)
     {
-        final Collection<Statement> result = new LinkedList<Statement>();
+        final Model result = new LinkedHashModel();
         final ValueFactory vf = new ValueFactoryImpl();
         
         try
@@ -388,7 +390,7 @@ public class RDFJSON
                         if(obj.has(RDFJSON.STRING_GRAPHS))
                         {
                             final JSONArray a = obj.getJSONArray(RDFJSON.STRING_GRAPHS);
-                            // System.out.println("a.length() = " + a.length());
+                            System.out.println("a.length() = " + a.length());
                             for(int j = 0; j < a.length(); j++)
                             {
                                 // Note: any nulls here will result in statements in the default
