@@ -7,6 +7,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openrdf.model.impl.LinkedHashModel;
 
 /**
  * Tests the performance of the RDFJSONParser and Writer against the relative performance of the
@@ -49,25 +50,24 @@ public class RDFJSONPerformanceTest
     @Test
     public void testJsonAndJsonPerformance() throws Exception
     {
-        Assert.assertNotNull(RDFJSONTestUtils.parseAndWrite("bio2rdf-configuration.json"));
+        RDFJSONTestUtils.parseJsonAndWriteJson("bio2rdf-configuration.json", new LinkedHashModel());
     }
     
     @Test
     public void testJsonAndTurtlePerformance() throws Exception
     {
-        Assert.assertNotNull(RDFJSONTestUtils.parseJsonAndWriteTurtle("bio2rdf-configuration.json"));
-        
+        RDFJSONTestUtils.parseJsonAndWriteTurtle("bio2rdf-configuration.json");
     }
     
     @Test
     public void testTurtleAndJsonPerformance() throws Exception
     {
-        Assert.assertNotNull(RDFJSONTestUtils.parseTurtleAndWriteJson("bio2rdf-configuration.ttl"));
+        RDFJSONTestUtils.parseTurtleAndWriteJson("bio2rdf-configuration.ttl");
     }
     
     @Test
     public void testTurtleAndTurtlePerformance() throws Exception
     {
-        Assert.assertNotNull(RDFJSONTestUtils.parseTurtleAndWriteTurtle("bio2rdf-configuration.ttl"));
+        RDFJSONTestUtils.parseTurtleAndWriteTurtle("bio2rdf-configuration.ttl");
     }
 }

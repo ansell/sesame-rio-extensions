@@ -23,6 +23,8 @@ import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.WriterConfig;
+import org.openrdf.rio.helpers.BasicWriterSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,6 +88,7 @@ public class RDFJSON
         jg.writeStartObject();
         if(object instanceof Literal)
         {
+            // System.err.println("Writing literal: " + object.stringValue());
             jg.writeObjectField(STRING_VALUE, object.stringValue());
             
             jg.writeObjectField(STRING_TYPE, RDFJSON.STRING_LITERAL);
@@ -103,12 +106,14 @@ public class RDFJSON
         }
         else if(object instanceof BNode)
         {
+            // System.err.println("Writing bnode: " + object.stringValue());
             jg.writeObjectField(STRING_VALUE, RDFJSON.resourceToString((BNode)object));
             
             jg.writeObjectField(STRING_TYPE, RDFJSON.STRING_BNODE);
         }
         else if(object instanceof URI)
         {
+            // System.err.println("Writing uri: " + object.stringValue());
             jg.writeObjectField(STRING_VALUE, RDFJSON.resourceToString((URI)object));
             
             jg.writeObjectField(STRING_TYPE, RDFJSON.STRING_URI);
@@ -157,12 +162,23 @@ public class RDFJSON
      */
     public static void modelToRdfJson(final Model graph, Writer writer) throws JsonGenerationException, IOException
     {
+        modelToRdfJson(graph, writer, new WriterConfig());
+    }
+    
+    public static void modelToRdfJson(Model graph, Writer writer, WriterConfig writerConfig)
+        throws JsonGenerationException, IOException
+    {
         JsonGenerator jg = JSON_FACTORY.createJsonGenerator(writer);
-        
+        if(writerConfig.get(BasicWriterSettings.PRETTY_PRINT))
+        {
+            // By default Jackson does not pretty print, so enable this unless PRETTY_PRINT setting
+            // is disabled
+            jg.useDefaultPrettyPrinter();
+        }
         jg.writeStartObject();
         for(final Resource nextSubject : graph.subjects())
         {
-            jg.writeObjectFieldStart(nextSubject.stringValue());
+            jg.writeObjectFieldStart(RDFJSON.resourceToString(nextSubject));
             for(final URI nextPredicate : graph.filter(nextSubject, null, null).predicates())
             {
                 jg.writeArrayFieldStart(nextPredicate.stringValue());
@@ -179,6 +195,8 @@ public class RDFJSON
             jg.writeEndObject();
         }
         jg.writeEndObject();
+        
+        jg.close();
     }
     
     /**
@@ -209,6 +227,9 @@ public class RDFJSON
                 
                 final String subjStr = jp.getCurrentName();
                 Resource subject = null;
+                
+                // System.err.println("subject=" + subjStr);
+                
                 subject = subjStr.startsWith("_:") ? vf.createBNode(subjStr.substring(2)) : vf.createURI(subjStr);
                 if(jp.nextToken() != JsonToken.START_OBJECT)
                 {
@@ -221,6 +242,9 @@ public class RDFJSON
                 while(jp.nextToken() != JsonToken.END_OBJECT)
                 {
                     final String predStr = jp.getCurrentName();
+                    
+                    // System.err.println("predicate=" + predStr);
+                    
                     final URI predicate = vf.createURI(predStr);
                     if(jp.nextToken() != JsonToken.START_ARRAY)
                     {
@@ -258,7 +282,7 @@ public class RDFJSON
                                 jp.nextToken();
                                 
                                 nextValue = jp.getText();
-                                //System.out.println("value='" + nextValue + "'");
+                                // System.out.println("value='" + nextValue + "'");
                             }
                             else if(STRING_TYPE.equals(fieldName))
                             {
@@ -272,7 +296,7 @@ public class RDFJSON
                                 jp.nextToken();
                                 
                                 nextType = jp.getText();
-                                //System.out.println("fieldtype=" + nextType);
+                                // System.out.println("fieldtype=" + nextType);
                             }
                             else if(STRING_LANG.equals(fieldName))
                             {
@@ -286,7 +310,7 @@ public class RDFJSON
                                 jp.nextToken();
                                 
                                 nextLanguage = jp.getText();
-                                //System.out.println("language=" + nextLanguage);
+                                // System.out.println("language=" + nextLanguage);
                             }
                             else if(STRING_DATATYPE.equals(fieldName))
                             {
@@ -300,7 +324,7 @@ public class RDFJSON
                                 jp.nextToken();
                                 
                                 nextDatatype = jp.getText();
-                                //System.out.println("datatype=<" + nextDatatype + ">");
+                                // System.out.println("datatype=<" + nextDatatype + ">");
                             }
                             else if(STRING_GRAPHS.equals(fieldName))
                             {
@@ -313,7 +337,7 @@ public class RDFJSON
                                 while(jp.nextToken() != JsonToken.END_ARRAY)
                                 {
                                     String nextGraph = jp.getText();
-                                    //System.out.println("context=<" + nextGraph + ">");
+                                    // System.out.println("context=<" + nextGraph + ">");
                                     
                                     nextContexts.add(nextGraph);
                                 }
@@ -389,7 +413,15 @@ public class RDFJSON
         }
         catch(IOException e)
         {
-            
+            if(jp != null)
+            {
+                throw new RDFParseException(e, jp.getCurrentLocation().getLineNr(), jp.getCurrentLocation()
+                        .getColumnNr());
+            }
+            else
+            {
+                throw new RDFParseException(e);
+            }
         }
         finally
         {
@@ -427,4 +459,5 @@ public class RDFJSON
             return "_:" + ((BNode)uriOrBnode).getID();
         }
     }
+    
 }

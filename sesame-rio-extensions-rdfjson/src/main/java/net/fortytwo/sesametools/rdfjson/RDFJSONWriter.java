@@ -49,7 +49,7 @@ public class RDFJSONWriter extends RDFWriterBase implements RDFWriter
     {
         try
         {
-            RDFJSON.modelToRdfJson(this.graph, this.writer);
+            RDFJSON.modelToRdfJson(this.graph, this.writer, this.getWriterConfig());
             
             this.writer.flush();
         }
