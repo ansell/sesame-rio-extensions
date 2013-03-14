@@ -22,6 +22,7 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.impl.TreeModel;
 import org.openrdf.model.impl.ValueFactoryImpl;
+import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.helpers.StatementCollector;
 import org.slf4j.Logger;
@@ -177,16 +178,17 @@ public class RDFJSONUnitTest
      * 
      * @throws IOException
      * @throws RDFParseException
+     * @throws RDFHandlerException
      */
     @Test
-    public void testRdfJsonToGraph0() throws IOException, RDFParseException
+    public void testRdfJsonToGraph0() throws IOException, RDFParseException, RDFHandlerException
     {
         this.testInputFile = "example0.json";
         
         Model rdfJsonToGraph = new LinkedHashModel();
         
         RDFJSON.rdfJsonToHandler(new InputStreamReader(this.getClass().getResourceAsStream(this.testInputFile),
-                StandardCharsets.UTF_8), new StatementCollector(rdfJsonToGraph));
+                StandardCharsets.UTF_8), new StatementCollector(rdfJsonToGraph), ValueFactoryImpl.getInstance());
         
         Assert.assertEquals(12, rdfJsonToGraph.size());
     }
@@ -196,18 +198,19 @@ public class RDFJSONUnitTest
      * 
      * @throws IOException
      * @throws RDFParseException
+     * @throws RDFHandlerException
      */
     @Test
-    public void testRdfJsonToGraph5() throws IOException, RDFParseException
+    public void testRdfJsonToGraph5() throws IOException, RDFParseException, RDFHandlerException
     {
         this.testInputFile = "example5.json";
         
         Model rdfJsonToGraph = new LinkedHashModel();
         
         RDFJSON.rdfJsonToHandler(new InputStreamReader(this.getClass().getResourceAsStream(this.testInputFile),
-                StandardCharsets.UTF_8), new StatementCollector(rdfJsonToGraph));
+                StandardCharsets.UTF_8), new StatementCollector(rdfJsonToGraph), ValueFactoryImpl.getInstance());
         
-        Assert.assertEquals(12, rdfJsonToGraph.size());
+        Assert.assertEquals(1, rdfJsonToGraph.size());
     }
     
 }
