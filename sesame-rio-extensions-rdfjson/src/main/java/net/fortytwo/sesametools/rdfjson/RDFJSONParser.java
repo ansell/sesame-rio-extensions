@@ -17,12 +17,12 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.rio.ParseErrorListener;
 import org.openrdf.rio.ParseLocationListener;
 import org.openrdf.rio.ParserConfig;
-import org.openrdf.rio.ParserSetting;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.RioSetting;
 import org.openrdf.rio.helpers.BasicParserSettings;
 
 import se.kmr.scam.rest.util.RDFJSON;
@@ -58,9 +58,9 @@ public class RDFJSONParser implements RDFParser
     }
     
     @Override
-    public Collection<ParserSetting<?>> getSupportedSettings()
+    public Collection<RioSetting<?>> getSupportedSettings()
     {
-        final Collection<ParserSetting<?>> result = new ArrayList<ParserSetting<?>>(4);
+        final Collection<RioSetting<?>> result = new ArrayList<RioSetting<?>>(4);
         
         result.add(BasicParserSettings.DATATYPE_HANDLING);
         result.add(BasicParserSettings.PRESERVE_BNODE_IDS);

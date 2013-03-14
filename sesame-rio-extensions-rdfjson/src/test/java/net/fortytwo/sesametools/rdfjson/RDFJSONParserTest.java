@@ -2,8 +2,6 @@ package net.fortytwo.sesametools.rdfjson;
 
 import java.io.InputStream;
 import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
 
 import net.fortytwo.sesametools.rdfjson.RDFJSONTestConstants.FOAF;
 
@@ -14,6 +12,7 @@ import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.LinkedHashModel;
+import org.openrdf.model.impl.TreeModel;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.model.vocabulary.OWL;
 import org.openrdf.model.vocabulary.RDF;
@@ -29,15 +28,11 @@ public class RDFJSONParserTest
     private final ValueFactory vf = ValueFactoryImpl.getInstance();
     private Model g;
     
-    protected void assertExpected(final Model graph, final Statement... expectedStatements) throws Exception
+    protected void assertExpected(final Model actual, final Statement... expectedStatements) throws Exception
     {
-        final Set<Statement> expected = new TreeSet<Statement>(new StatementComparator());
+        final Model expected = new TreeModel();
         Collections.addAll(expected, expectedStatements);
-        final Set<Statement> actual = new TreeSet<Statement>(new StatementComparator());
-        for(final Statement st : graph)
-        {
-            actual.add(st);
-        }
+        
         for(final Statement t : expected)
         {
             if(!actual.contains(t))
