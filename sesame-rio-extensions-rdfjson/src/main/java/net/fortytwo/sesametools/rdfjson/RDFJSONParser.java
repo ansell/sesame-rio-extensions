@@ -14,6 +14,7 @@ import java.util.Collection;
 import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.model.ValueFactory;
+import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.rio.ParseErrorListener;
 import org.openrdf.rio.ParseLocationListener;
 import org.openrdf.rio.ParserConfig;
@@ -38,7 +39,7 @@ import com.github.ansell.sesamerioextensions.rdfjson.RDFJSON;
 public class RDFJSONParser implements RDFParser
 {
     
-    private ValueFactory valueFactory;
+    private ValueFactory valueFactory = ValueFactoryImpl.getInstance();
     private RDFHandler rdfHandler;
     private ParseErrorListener parseErrorListener;
     private ParseLocationListener parseLocationListener;
@@ -87,7 +88,7 @@ public class RDFJSONParser implements RDFParser
         }
         
         this.rdfHandler.startRDF();
-        RDFJSON.rdfJsonToHandler(reader, this.rdfHandler);
+        RDFJSON.rdfJsonToHandler(reader, this.rdfHandler, this.valueFactory);
         this.rdfHandler.endRDF();
     }
     
