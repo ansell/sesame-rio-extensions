@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +21,7 @@ import org.openrdf.model.ValueFactory;
 import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.rio.RDFHandler;
+import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -186,12 +188,11 @@ public class RDFJSON
      *            The RDF/JSON string to be parsed.
      * @param handler
      *            The {@link RDFHandler} to handle the resulting triples.
+     * @throws RDFHandlerException
      */
-    public static void rdfJsonToHandler(final Reader json, final RDFHandler handler) throws RDFParseException
+    public static void rdfJsonToHandler(final Reader json, final RDFHandler handler, final ValueFactory vf)
+        throws RDFParseException, RDFHandlerException
     {
-        final Model result = new LinkedHashModel();
-        final ValueFactory vf = new ValueFactoryImpl();
-        
         JsonParser jp = null;
         
         try
@@ -240,7 +241,7 @@ public class RDFJSON
                         String nextType = null;
                         String nextDatatype = null;
                         String nextLanguage = null;
-                        List<String> nextContexts = new ArrayList<String>(2);
+                        Set<String> nextContexts = new HashSet<String>(2);
                         
                         while(jp.nextToken() != JsonToken.END_OBJECT)
                         {
@@ -257,7 +258,7 @@ public class RDFJSON
                                 jp.nextToken();
                                 
                                 nextValue = jp.getText();
-                                System.out.println("value='" + nextValue + "'");
+                                //System.out.println("value='" + nextValue + "'");
                             }
                             else if(STRING_TYPE.equals(fieldName))
                             {
@@ -271,7 +272,7 @@ public class RDFJSON
                                 jp.nextToken();
                                 
                                 nextType = jp.getText();
-                                System.out.println("fieldtype=" + nextType);
+                                //System.out.println("fieldtype=" + nextType);
                             }
                             else if(STRING_LANG.equals(fieldName))
                             {
@@ -285,7 +286,7 @@ public class RDFJSON
                                 jp.nextToken();
                                 
                                 nextLanguage = jp.getText();
-                                System.out.println("language=" + nextLanguage);
+                                //System.out.println("language=" + nextLanguage);
                             }
                             else if(STRING_DATATYPE.equals(fieldName))
                             {
@@ -299,7 +300,7 @@ public class RDFJSON
                                 jp.nextToken();
                                 
                                 nextDatatype = jp.getText();
-                                System.out.println("datatype=<" + nextDatatype + ">");
+                                //System.out.println("datatype=<" + nextDatatype + ">");
                             }
                             else if(STRING_GRAPHS.equals(fieldName))
                             {
@@ -311,10 +312,8 @@ public class RDFJSON
                                 
                                 while(jp.nextToken() != JsonToken.END_ARRAY)
                                 {
-                                    jp.nextToken();
-                                    
                                     String nextGraph = jp.getText();
-                                    System.out.println("context=<" + nextGraph + ">");
+                                    //System.out.println("context=<" + nextGraph + ">");
                                     
                                     nextContexts.add(nextGraph);
                                 }
@@ -377,12 +376,12 @@ public class RDFJSON
                                 final Resource context =
                                         nextContext.equals(RDFJSON.STRING_NULL) ? null : vf.createURI(nextContext);
                                 // System.out.println("context = " + context);
-                                result.add(vf.createStatement(subject, predicate, object, context));
+                                handler.handleStatement(vf.createStatement(subject, predicate, object, context));
                             }
                         }
                         else
                         {
-                            result.add(vf.createStatement(subject, predicate, object));
+                            handler.handleStatement(vf.createStatement(subject, predicate, object));
                         }
                     }
                 }
