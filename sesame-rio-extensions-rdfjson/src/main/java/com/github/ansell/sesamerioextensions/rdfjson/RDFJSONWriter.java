@@ -51,17 +51,17 @@ public class RDFJSONWriter extends RDFWriterBase implements RDFWriter
             if(this.writer != null)
             {
                 RDFJSONUtility.modelToRdfJson(this.graph, this.writer, this.getWriterConfig());
+                this.writer.flush();
             }
             else if(this.outputStream != null)
             {
                 RDFJSONUtility.modelToRdfJson(this.graph, this.outputStream, this.getWriterConfig());
+                this.outputStream.flush();
             }
             else
             {
                 throw new IllegalStateException("The output stream and the writer were both null.");
             }
-            
-            this.writer.flush();
         }
         catch(final IOException e)
         {
@@ -72,7 +72,7 @@ public class RDFJSONWriter extends RDFWriterBase implements RDFWriter
     @Override
     public RDFFormat getRDFFormat()
     {
-        return RDFFormatExtensions.RDFJSONPREFERRED;
+        return this.actualFormat;
     }
     
     @Override
