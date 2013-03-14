@@ -19,6 +19,8 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.rio.helpers.StatementCollector;
 
+import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONParser;
+
 /**
  * @author Joshua Shinavier (http://fortytwo.net).
  * @author Peter Ansell p_ansell@yahoo.com

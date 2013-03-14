@@ -1,4 +1,4 @@
-package net.fortytwo.sesametools.rdfjson;
+package com.github.ansell.sesamerioextensions.rdfjson;
 
 import org.kohsuke.MetaInfServices;
 import org.openrdf.rio.RDFFormat;

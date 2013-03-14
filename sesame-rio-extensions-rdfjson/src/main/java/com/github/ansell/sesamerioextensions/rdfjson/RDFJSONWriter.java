@@ -1,10 +1,8 @@
-package net.fortytwo.sesametools.rdfjson;
+package com.github.ansell.sesamerioextensions.rdfjson;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,7 +18,6 @@ import org.openrdf.rio.helpers.BasicWriterSettings;
 import org.openrdf.rio.helpers.RDFWriterBase;
 
 import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
-import com.github.ansell.sesamerioextensions.rdfjson.RDFJSON;
 
 /**
  * {@link RDFWriter} implementation for the RDF/JSON format
@@ -29,12 +26,13 @@ import com.github.ansell.sesamerioextensions.rdfjson.RDFJSON;
  */
 public class RDFJSONWriter extends RDFWriterBase implements RDFWriter
 {
-    private final Writer writer;
+    private Writer writer;
+    private OutputStream outputStream;
     private Model graph;
     
     public RDFJSONWriter(final OutputStream out)
     {
-        this(new OutputStreamWriter(out, Charset.forName("UTF-8")));
+        this.outputStream = out;
     }
     
     public RDFJSONWriter(final Writer writer)
@@ -47,7 +45,18 @@ public class RDFJSONWriter extends RDFWriterBase implements RDFWriter
     {
         try
         {
-            RDFJSON.modelToRdfJson(this.graph, this.writer, this.getWriterConfig());
+            if(this.writer != null)
+            {
+                RDFJSONUtility.modelToRdfJson(this.graph, this.writer, this.getWriterConfig());
+            }
+            else if(this.outputStream != null)
+            {
+                RDFJSONUtility.modelToRdfJson(this.graph, this.outputStream, this.getWriterConfig());
+            }
+            else
+            {
+                throw new IllegalStateException("The output stream and the writer were both null.");
+            }
             
             this.writer.flush();
         }

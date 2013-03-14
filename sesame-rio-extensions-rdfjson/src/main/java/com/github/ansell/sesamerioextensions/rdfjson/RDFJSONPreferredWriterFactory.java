@@ -1,4 +1,4 @@
-package net.fortytwo.sesametools.rdfjson;
+package com.github.ansell.sesamerioextensions.rdfjson;
 
 import java.io.OutputStream;
 import java.io.Writer;
@@ -8,19 +8,21 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.RDFWriterFactory;
 
+import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
+
 /**
  * Writer Factory for the RDFJSONWriter.
  * 
  * @author fkleedorfer
  */
 @MetaInfServices(RDFWriterFactory.class)
-public class RDFJSONStandardWriterFactory implements RDFWriterFactory
+public class RDFJSONPreferredWriterFactory implements RDFWriterFactory
 {
     
     @Override
     public RDFFormat getRDFFormat()
     {
-        return RDFFormat.RDFJSON;
+        return RDFFormatExtensions.RDFJSONPREFERRED;
     }
     
     @Override

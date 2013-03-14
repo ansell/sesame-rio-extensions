@@ -2,6 +2,7 @@ package com.github.ansell.sesamerioextensions.rdfjson;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.HashSet;
@@ -34,7 +35,7 @@ import com.fasterxml.jackson.core.JsonToken;
  * 
  * @author Peter Ansell p_ansell@yahoo.com
  */
-public class RDFJSON
+public class RDFJSONUtility
 {
     private static final String STRING_NULL = "null";
     private static final String STRING_GRAPHS = "graphs";
@@ -46,7 +47,7 @@ public class RDFJSON
     private static final String STRING_TYPE = "type";
     private static final String STRING_VALUE = "value";
     
-    private static final Logger log = LoggerFactory.getLogger(RDFJSON.class);
+    private static final Logger log = LoggerFactory.getLogger(RDFJSONUtility.class);
     
     private static final JsonFactory JSON_FACTORY = new JsonFactory();
     
@@ -55,9 +56,9 @@ public class RDFJSON
         // Disable features that may work for most JSON where the field names are in limited supply,
         // but does not work for RDF/JSON where a wide range of URIs are used for subjects and
         // predicates
-        RDFJSON.JSON_FACTORY.disable(JsonFactory.Feature.INTERN_FIELD_NAMES);
-        RDFJSON.JSON_FACTORY.disable(JsonFactory.Feature.CANONICALIZE_FIELD_NAMES);
-        RDFJSON.JSON_FACTORY.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
+        RDFJSONUtility.JSON_FACTORY.disable(JsonFactory.Feature.INTERN_FIELD_NAMES);
+        RDFJSONUtility.JSON_FACTORY.disable(JsonFactory.Feature.CANONICALIZE_FIELD_NAMES);
+        RDFJSONUtility.JSON_FACTORY.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
     }
     
     /**
@@ -66,22 +67,86 @@ public class RDFJSON
      * @param graph
      *            A model containing all of the statements to be rendered to RDF/JSON.
      * @param writer
-     *            The output writer to use, or null to use a new StringWriter.
+     *            The output stream to use.
      * 
-     * @return An RDF/JSON string if successful, otherwise null.
+     * @throws IOException
+     * @throws JsonGenerationException
+     */
+    public static void modelToRdfJson(final Model graph, final OutputStream writer) throws JsonGenerationException,
+        IOException
+    {
+        RDFJSONUtility.modelToRdfJson(graph, writer, new WriterConfig());
+    }
+    
+    /**
+     * Outputs a {@link Model} directly to JSON.
+     * 
+     * @param graph
+     *            A model containing all of the statements to be rendered to RDF/JSON.
+     * @param writer
+     *            The output stream to use.
+     * @param writerConfig
+     *            The {@link WriterConfig} to use for accessing specific settings.
+     * @throws IOException
+     * @throws JsonGenerationException
+     */
+    public static void modelToRdfJson(final Model graph, final OutputStream writer, final WriterConfig writerConfig)
+        throws JsonGenerationException, IOException
+    {
+        final JsonGenerator jg = RDFJSONUtility.JSON_FACTORY.createJsonGenerator(writer);
+        RDFJSONUtility.modelToRdfJsonInternal(graph, writerConfig, jg);
+        
+        jg.close();
+    }
+    
+    /**
+     * Outputs a {@link Model} directly to JSON.
+     * 
+     * @param graph
+     *            A model containing all of the statements to be rendered to RDF/JSON.
+     * @param writer
+     *            The output writer to use.
+     * 
      * @throws IOException
      * @throws JsonGenerationException
      */
     public static void modelToRdfJson(final Model graph, final Writer writer) throws JsonGenerationException,
         IOException
     {
-        RDFJSON.modelToRdfJson(graph, writer, new WriterConfig());
+        RDFJSONUtility.modelToRdfJson(graph, writer, new WriterConfig());
     }
     
+    /**
+     * Outputs a {@link Model} directly to JSON.
+     * 
+     * @param graph
+     *            A model containing all of the statements to be rendered to RDF/JSON.
+     * @param writer
+     *            The output writer to use.
+     * @param writerConfig
+     *            The {@link WriterConfig} to use for accessing specific settings.
+     * @throws IOException
+     * @throws JsonGenerationException
+     */
     public static void modelToRdfJson(final Model graph, final Writer writer, final WriterConfig writerConfig)
         throws JsonGenerationException, IOException
     {
-        final JsonGenerator jg = RDFJSON.JSON_FACTORY.createJsonGenerator(writer);
+        final JsonGenerator jg = RDFJSONUtility.JSON_FACTORY.createJsonGenerator(writer);
+        RDFJSONUtility.modelToRdfJsonInternal(graph, writerConfig, jg);
+        
+        jg.close();
+    }
+    
+    /**
+     * @param graph
+     * @param writerConfig
+     * @param jg
+     * @throws IOException
+     * @throws JsonGenerationException
+     */
+    private static void modelToRdfJsonInternal(final Model graph, final WriterConfig writerConfig,
+            final JsonGenerator jg) throws IOException, JsonGenerationException
+    {
         if(writerConfig.get(BasicWriterSettings.PRETTY_PRINT))
         {
             // By default Jackson does not pretty print, so enable this unless PRETTY_PRINT setting
@@ -91,7 +156,7 @@ public class RDFJSON
         jg.writeStartObject();
         for(final Resource nextSubject : graph.subjects())
         {
-            jg.writeObjectFieldStart(RDFJSON.resourceToString(nextSubject));
+            jg.writeObjectFieldStart(RDFJSONUtility.resourceToString(nextSubject));
             for(final URI nextPredicate : graph.filter(nextSubject, null, null).predicates())
             {
                 jg.writeArrayFieldStart(nextPredicate.stringValue());
@@ -101,15 +166,13 @@ public class RDFJSON
                     // depending on the interpretation of the way contexts work
                     final Set<Resource> contexts = graph.filter(nextSubject, nextPredicate, nextObject).contexts();
                     
-                    RDFJSON.writeObject(nextObject, contexts, jg);
+                    RDFJSONUtility.writeObject(nextObject, contexts, jg);
                 }
                 jg.writeEndArray();
             }
             jg.writeEndObject();
         }
         jg.writeEndObject();
-        
-        jg.close();
     }
     
     /**
@@ -128,8 +191,8 @@ public class RDFJSON
         
         try
         {
-            jp = RDFJSON.JSON_FACTORY.createJsonParser(json);
-            RDFJSON.rdfJsonToHandlerInternal(handler, vf, jp);
+            jp = RDFJSONUtility.JSON_FACTORY.createJsonParser(json);
+            RDFJSONUtility.rdfJsonToHandlerInternal(handler, vf, jp);
         }
         catch(final IOException e)
         {
@@ -176,8 +239,8 @@ public class RDFJSON
         
         try
         {
-            jp = RDFJSON.JSON_FACTORY.createJsonParser(json);
-            RDFJSON.rdfJsonToHandlerInternal(handler, vf, jp);
+            jp = RDFJSONUtility.JSON_FACTORY.createJsonParser(json);
+            RDFJSONUtility.rdfJsonToHandlerInternal(handler, vf, jp);
         }
         catch(final IOException e)
         {
@@ -274,7 +337,7 @@ public class RDFJSON
                     while(jp.nextToken() != JsonToken.END_OBJECT)
                     {
                         final String fieldName = jp.getCurrentName();
-                        if(RDFJSON.STRING_VALUE.equals(fieldName))
+                        if(RDFJSONUtility.STRING_VALUE.equals(fieldName))
                         {
                             if(nextValue != null)
                             {
@@ -288,7 +351,7 @@ public class RDFJSON
                             nextValue = jp.getText();
                             // System.out.println("value='" + nextValue + "'");
                         }
-                        else if(RDFJSON.STRING_TYPE.equals(fieldName))
+                        else if(RDFJSONUtility.STRING_TYPE.equals(fieldName))
                         {
                             if(nextType != null)
                             {
@@ -302,7 +365,7 @@ public class RDFJSON
                             nextType = jp.getText();
                             // System.out.println("fieldtype=" + nextType);
                         }
-                        else if(RDFJSON.STRING_LANG.equals(fieldName))
+                        else if(RDFJSONUtility.STRING_LANG.equals(fieldName))
                         {
                             if(nextLanguage != null)
                             {
@@ -316,7 +379,7 @@ public class RDFJSON
                             nextLanguage = jp.getText();
                             // System.out.println("language=" + nextLanguage);
                         }
-                        else if(RDFJSON.STRING_DATATYPE.equals(fieldName))
+                        else if(RDFJSONUtility.STRING_DATATYPE.equals(fieldName))
                         {
                             if(nextDatatype != null)
                             {
@@ -330,7 +393,7 @@ public class RDFJSON
                             nextDatatype = jp.getText();
                             // System.out.println("datatype=<" + nextDatatype + ">");
                         }
-                        else if(RDFJSON.STRING_GRAPHS.equals(fieldName))
+                        else if(RDFJSONUtility.STRING_GRAPHS.equals(fieldName))
                         {
                             if(jp.nextToken() != JsonToken.START_ARRAY)
                             {
@@ -369,7 +432,7 @@ public class RDFJSON
                                         .getCurrentLocation().getLineNr(), jp.getCurrentLocation().getColumnNr());
                     }
                     
-                    if(RDFJSON.STRING_LITERAL.equals(nextType))
+                    if(RDFJSONUtility.STRING_LITERAL.equals(nextType))
                     {
                         if(nextLanguage != null)
                         {
@@ -384,11 +447,11 @@ public class RDFJSON
                             object = vf.createLiteral(nextValue);
                         }
                     }
-                    else if(RDFJSON.STRING_BNODE.equals(nextType))
+                    else if(RDFJSONUtility.STRING_BNODE.equals(nextType))
                     {
                         object = vf.createBNode(nextValue.substring(2));
                     }
-                    else if(RDFJSON.STRING_URI.equals(nextType))
+                    else if(RDFJSONUtility.STRING_URI.equals(nextType))
                     {
                         object = vf.createURI(nextValue);
                     }
@@ -401,7 +464,7 @@ public class RDFJSON
                             // context.
                             // System.out.println("s = " + s);
                             final Resource context =
-                                    nextContext.equals(RDFJSON.STRING_NULL) ? null : vf.createURI(nextContext);
+                                    nextContext.equals(RDFJSONUtility.STRING_NULL) ? null : vf.createURI(nextContext);
                             // System.out.println("context = " + context);
                             handler.handleStatement(vf.createStatement(subject, predicate, object, context));
                         }
@@ -459,34 +522,34 @@ public class RDFJSON
         if(object instanceof Literal)
         {
             // System.err.println("Writing literal: " + object.stringValue());
-            jg.writeObjectField(RDFJSON.STRING_VALUE, object.stringValue());
+            jg.writeObjectField(RDFJSONUtility.STRING_VALUE, object.stringValue());
             
-            jg.writeObjectField(RDFJSON.STRING_TYPE, RDFJSON.STRING_LITERAL);
+            jg.writeObjectField(RDFJSONUtility.STRING_TYPE, RDFJSONUtility.STRING_LITERAL);
             final Literal l = (Literal)object;
             
             if(l.getLanguage() != null)
             {
-                jg.writeObjectField(RDFJSON.STRING_LANG, l.getLanguage());
+                jg.writeObjectField(RDFJSONUtility.STRING_LANG, l.getLanguage());
             }
             
             if(l.getDatatype() != null)
             {
-                jg.writeObjectField(RDFJSON.STRING_DATATYPE, l.getDatatype().stringValue());
+                jg.writeObjectField(RDFJSONUtility.STRING_DATATYPE, l.getDatatype().stringValue());
             }
         }
         else if(object instanceof BNode)
         {
             // System.err.println("Writing bnode: " + object.stringValue());
-            jg.writeObjectField(RDFJSON.STRING_VALUE, RDFJSON.resourceToString((BNode)object));
+            jg.writeObjectField(RDFJSONUtility.STRING_VALUE, RDFJSONUtility.resourceToString((BNode)object));
             
-            jg.writeObjectField(RDFJSON.STRING_TYPE, RDFJSON.STRING_BNODE);
+            jg.writeObjectField(RDFJSONUtility.STRING_TYPE, RDFJSONUtility.STRING_BNODE);
         }
         else if(object instanceof URI)
         {
             // System.err.println("Writing uri: " + object.stringValue());
-            jg.writeObjectField(RDFJSON.STRING_VALUE, RDFJSON.resourceToString((URI)object));
+            jg.writeObjectField(RDFJSONUtility.STRING_VALUE, RDFJSONUtility.resourceToString((URI)object));
             
-            jg.writeObjectField(RDFJSON.STRING_TYPE, RDFJSON.STRING_URI);
+            jg.writeObjectField(RDFJSONUtility.STRING_TYPE, RDFJSONUtility.STRING_URI);
         }
         
         // net.sf.json line
@@ -500,7 +563,7 @@ public class RDFJSON
         // in this case
         if(contexts != null && !contexts.isEmpty() && !(contexts.size() == 1 && contexts.iterator().next() == null))
         {
-            jg.writeArrayFieldStart(RDFJSON.STRING_GRAPHS);
+            jg.writeArrayFieldStart(RDFJSONUtility.STRING_GRAPHS);
             for(final Resource nextContext : contexts)
             {
                 if(nextContext == null)

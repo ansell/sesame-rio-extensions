@@ -18,6 +18,9 @@ import org.openrdf.rio.rdfxml.RDFXMLParser;
 import org.openrdf.rio.turtle.TurtleParser;
 import org.openrdf.rio.turtle.TurtleWriter;
 
+import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONParser;
+import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONWriter;
+
 /**
  * Test utils for comparative parsing using the RDF/JSON parser and the Sesame Turtle parser
  * 

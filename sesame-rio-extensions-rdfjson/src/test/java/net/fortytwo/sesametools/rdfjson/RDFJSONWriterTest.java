@@ -13,6 +13,9 @@ import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.util.ModelUtil;
 import org.openrdf.rio.helpers.StatementCollector;
 
+import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONParser;
+import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONWriter;
+
 /**
  * Tests the RDF/JSON writer by way of the RDF/JSON parser.
  * 

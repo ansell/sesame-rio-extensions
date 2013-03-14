@@ -1,11 +1,8 @@
-package net.fortytwo.sesametools.rdfjson;
+package com.github.ansell.sesamerioextensions.rdfjson;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
-import java.nio.charset.Charset;
 
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
@@ -14,7 +11,6 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.helpers.RDFParserBase;
 
 import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
-import com.github.ansell.sesamerioextensions.rdfjson.RDFJSON;
 
 /**
  * {@link RDFParser} implementation for the RDF/JSON format
@@ -51,7 +47,7 @@ public class RDFJSONParser extends RDFParserBase implements RDFParser
         }
         
         this.rdfHandler.startRDF();
-        RDFJSON.rdfJsonToHandler(inputStream, this.rdfHandler, this.valueFactory);
+        RDFJSONUtility.rdfJsonToHandler(inputStream, this.rdfHandler, this.valueFactory);
         this.rdfHandler.endRDF();
     }
     
@@ -65,7 +61,7 @@ public class RDFJSONParser extends RDFParserBase implements RDFParser
         }
         
         this.rdfHandler.startRDF();
-        RDFJSON.rdfJsonToHandler(reader, this.rdfHandler, this.valueFactory);
+        RDFJSONUtility.rdfJsonToHandler(reader, this.rdfHandler, this.valueFactory);
         this.rdfHandler.endRDF();
     }
     

@@ -29,7 +29,7 @@ import org.openrdf.rio.helpers.StatementCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.ansell.sesamerioextensions.rdfjson.RDFJSON;
+import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONUtility;
 
 /**
  * @author Peter Ansell p_ansell@yahoo.com
@@ -70,7 +70,7 @@ public class RDFJSONUnitTest
     
     /**
      * Test method for
-     * {@link se.kmr.scam.rest.util.RDFJSON#graphToRdfJsonPreordered(java.util.Set, java.io.Writer)}
+     * {@link RDFJSONUtility.kmr.scam.rest.util.RDFJSON#graphToRdfJsonPreordered(java.util.Set, java.io.Writer)}
      * .
      * 
      * @throws JSONException
@@ -141,7 +141,7 @@ public class RDFJSONUnitTest
         Assert.assertEquals(testStatement9, testStatementIterator.next());
         Assert.assertTrue(testStatementIterator.hasNext());
         
-        RDFJSON.modelToRdfJson(testStatements, this.testWriter, this.testWriterConfig);
+        RDFJSONUtility.modelToRdfJson(testStatements, this.testWriter, this.testWriterConfig);
         
         this.testOutput = this.testWriter.toString();
         
@@ -179,7 +179,8 @@ public class RDFJSONUnitTest
     }
     
     /**
-     * Test method for {@link se.kmr.scam.rest.util.RDFJSON#rdfJsonToGraph(java.lang.String)}.
+     * Test method for
+     * {@link RDFJSONUtility.kmr.scam.rest.util.RDFJSON#rdfJsonToGraph(java.lang.String)}.
      * 
      * @throws IOException
      * @throws RDFParseException
@@ -192,14 +193,15 @@ public class RDFJSONUnitTest
         
         final Model rdfJsonToGraph = new LinkedHashModel();
         
-        RDFJSON.rdfJsonToHandler(new InputStreamReader(this.getClass().getResourceAsStream(this.testInputFile),
+        RDFJSONUtility.rdfJsonToHandler(new InputStreamReader(this.getClass().getResourceAsStream(this.testInputFile),
                 StandardCharsets.UTF_8), new StatementCollector(rdfJsonToGraph), ValueFactoryImpl.getInstance());
         
         Assert.assertEquals(12, rdfJsonToGraph.size());
     }
     
     /**
-     * Test method for {@link se.kmr.scam.rest.util.RDFJSON#rdfJsonToGraph(java.lang.String)}.
+     * Test method for
+     * {@link RDFJSONUtility.kmr.scam.rest.util.RDFJSON#rdfJsonToGraph(java.lang.String)}.
      * 
      * @throws IOException
      * @throws RDFParseException
@@ -212,7 +214,7 @@ public class RDFJSONUnitTest
         
         final Model rdfJsonToGraph = new LinkedHashModel();
         
-        RDFJSON.rdfJsonToHandler(new InputStreamReader(this.getClass().getResourceAsStream(this.testInputFile),
+        RDFJSONUtility.rdfJsonToHandler(new InputStreamReader(this.getClass().getResourceAsStream(this.testInputFile),
                 StandardCharsets.UTF_8), new StatementCollector(rdfJsonToGraph), ValueFactoryImpl.getInstance());
         
         Assert.assertEquals(1, rdfJsonToGraph.size());
