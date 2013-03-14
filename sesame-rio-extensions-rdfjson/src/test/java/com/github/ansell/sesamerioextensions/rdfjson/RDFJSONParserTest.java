@@ -1,9 +1,7 @@
-package net.fortytwo.sesametools.rdfjson;
+package com.github.ansell.sesamerioextensions.rdfjson;
 
 import java.io.InputStream;
 import java.util.Collections;
-
-import net.fortytwo.sesametools.rdfjson.RDFJSONTestConstants.FOAF;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -19,7 +17,7 @@ import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.rio.helpers.StatementCollector;
 
-import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONParser;
+import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONTestConstants.FOAF;
 
 /**
  * @author Joshua Shinavier (http://fortytwo.net).
@@ -65,6 +63,7 @@ public class RDFJSONParserTest
         p.setRDFHandler(new StatementCollector(model));
         
         final InputStream in = RDFJSONParser.class.getResourceAsStream(fileName);
+        Assert.assertNotNull("Could not find test resource: " + fileName, in);
         try
         {
             p.parse(in, RDFJSONTestConstants.BASE_URI);

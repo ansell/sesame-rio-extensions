@@ -1,4 +1,4 @@
-package net.fortytwo.sesametools.rdfjson;
+package com.github.ansell.sesamerioextensions.rdfjson;
 
 import java.io.InputStream;
 import java.io.StringReader;
@@ -14,8 +14,6 @@ import org.openrdf.model.util.ModelUtil;
 import org.openrdf.rio.helpers.StatementCollector;
 
 import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
-import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONParser;
-import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONWriter;
 
 /**
  * Tests the RDF/JSON writer by way of the RDF/JSON parser.

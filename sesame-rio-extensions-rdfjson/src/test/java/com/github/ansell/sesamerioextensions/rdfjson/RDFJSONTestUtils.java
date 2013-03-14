@@ -1,7 +1,7 @@
 /**
  *
  */
-package net.fortytwo.sesametools.rdfjson;
+package com.github.ansell.sesamerioextensions.rdfjson;
 
 import java.io.InputStream;
 import java.io.StringReader;
@@ -19,8 +19,6 @@ import org.openrdf.rio.turtle.TurtleParser;
 import org.openrdf.rio.turtle.TurtleWriter;
 
 import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
-import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONParser;
-import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONWriter;
 
 /**
  * Test utils for comparative parsing using the RDF/JSON parser and the Sesame Turtle parser

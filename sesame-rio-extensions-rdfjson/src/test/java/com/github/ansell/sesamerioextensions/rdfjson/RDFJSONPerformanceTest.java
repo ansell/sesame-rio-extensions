@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.fortytwo.sesametools.rdfjson;
+package com.github.ansell.sesamerioextensions.rdfjson;
 
 import org.junit.After;
 import org.junit.Before;

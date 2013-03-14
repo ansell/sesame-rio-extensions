@@ -1,4 +1,4 @@
-package net.fortytwo.sesametools.rdfjson;
+package com.github.ansell.sesamerioextensions.rdfjson;
 
 import java.io.StringWriter;
 
@@ -8,9 +8,6 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
-
-import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONParser;
-import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONWriter;
 
 /**
  * @author Peter Ansell p_ansell@yahoo.com

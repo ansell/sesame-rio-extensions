@@ -1,7 +1,7 @@
 /**
  * 
  */
-package net.fortytwo.sesametools.rdfjson;
+package com.github.ansell.sesamerioextensions.rdfjson;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,8 +28,6 @@ import org.openrdf.rio.helpers.BasicWriterSettings;
 import org.openrdf.rio.helpers.StatementCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONUtility;
 
 /**
  * @author Peter Ansell p_ansell@yahoo.com
