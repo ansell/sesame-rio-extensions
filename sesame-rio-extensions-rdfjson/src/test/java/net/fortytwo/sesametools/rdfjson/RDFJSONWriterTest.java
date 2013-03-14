@@ -13,6 +13,7 @@ import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.util.ModelUtil;
 import org.openrdf.rio.helpers.StatementCollector;
 
+import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
 import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONParser;
 import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONWriter;
 
@@ -111,7 +112,7 @@ public class RDFJSONWriterTest
         }
         
         final StringWriter sw = new StringWriter();
-        final RDFJSONWriter w = new RDFJSONWriter(sw);
+        final RDFJSONWriter w = new RDFJSONWriter(sw, RDFFormatExtensions.RDFJSONPREFERRED);
         w.startRDF();
         for(final Statement nextStatement : model)
         {

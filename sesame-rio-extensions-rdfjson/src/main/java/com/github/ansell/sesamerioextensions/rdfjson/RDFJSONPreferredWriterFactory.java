@@ -28,13 +28,13 @@ public class RDFJSONPreferredWriterFactory implements RDFWriterFactory
     @Override
     public RDFWriter getWriter(final OutputStream out)
     {
-        return new RDFJSONWriter(out);
+        return new RDFJSONWriter(out, this.getRDFFormat());
     }
     
     @Override
     public RDFWriter getWriter(final Writer writer)
     {
-        return new RDFJSONWriter(writer);
+        return new RDFJSONWriter(writer, this.getRDFFormat());
     }
     
 }

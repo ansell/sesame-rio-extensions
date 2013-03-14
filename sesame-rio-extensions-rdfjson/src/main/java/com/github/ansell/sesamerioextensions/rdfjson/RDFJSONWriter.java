@@ -29,15 +29,18 @@ public class RDFJSONWriter extends RDFWriterBase implements RDFWriter
     private Writer writer;
     private OutputStream outputStream;
     private Model graph;
+    private final RDFFormat actualFormat;
     
-    public RDFJSONWriter(final OutputStream out)
+    public RDFJSONWriter(final OutputStream out, final RDFFormat actualFormat)
     {
         this.outputStream = out;
+        this.actualFormat = actualFormat;
     }
     
-    public RDFJSONWriter(final Writer writer)
+    public RDFJSONWriter(final Writer writer, final RDFFormat actualFormat)
     {
         this.writer = writer;
+        this.actualFormat = actualFormat;
     }
     
     @Override

@@ -18,6 +18,7 @@ import org.openrdf.rio.rdfxml.RDFXMLParser;
 import org.openrdf.rio.turtle.TurtleParser;
 import org.openrdf.rio.turtle.TurtleWriter;
 
+import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
 import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONParser;
 import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONWriter;
 
@@ -33,7 +34,7 @@ public final class RDFJSONTestUtils
         final RDFJSONParser p = new RDFJSONParser();
         final Writer stringWriter = new StringWriter();
         
-        final RDFWriter w = new RDFJSONWriter(stringWriter);
+        final RDFWriter w = new RDFJSONWriter(stringWriter, RDFFormatExtensions.RDFJSONPREFERRED);
         w.getWriterConfig().set(BasicWriterSettings.PRETTY_PRINT, false);
         p.setRDFHandler(w);
         final InputStream in = RDFJSONTestUtils.class.getResourceAsStream(fileName);
@@ -76,7 +77,7 @@ public final class RDFJSONTestUtils
         final RDFParser p = new RDFXMLParser();
         final Writer stringWriter = new StringWriter();
         
-        final RDFWriter w = new RDFJSONWriter(stringWriter);
+        final RDFWriter w = new RDFJSONWriter(stringWriter, RDFFormatExtensions.RDFJSONPREFERRED);
         w.getWriterConfig().set(BasicWriterSettings.PRETTY_PRINT, false);
         p.setRDFHandler(w);
         final InputStream in = RDFJSONTestUtils.class.getResourceAsStream(fileName);
@@ -95,7 +96,7 @@ public final class RDFJSONTestUtils
         final RDFParser p = new TurtleParser();
         final Writer stringWriter = new StringWriter();
         
-        final RDFWriter w = new RDFJSONWriter(stringWriter);
+        final RDFWriter w = new RDFJSONWriter(stringWriter, RDFFormatExtensions.RDFJSONPREFERRED);
         w.getWriterConfig().set(BasicWriterSettings.PRETTY_PRINT, false);
         p.setRDFHandler(w);
         final InputStream in = RDFJSONTestUtils.class.getResourceAsStream(fileName);
@@ -133,7 +134,7 @@ public final class RDFJSONTestUtils
         final RDFParser p = new RDFXMLParser();
         final Writer stringWriter = new StringWriter();
         
-        final RDFWriter w = new RDFJSONWriter(stringWriter);
+        final RDFWriter w = new RDFJSONWriter(stringWriter, RDFFormatExtensions.RDFJSONPREFERRED);
         w.getWriterConfig().set(BasicWriterSettings.PRETTY_PRINT, false);
         p.setRDFHandler(w);
         final InputStream in = RDFJSONTestConstants.class.getResourceAsStream(fileName);
