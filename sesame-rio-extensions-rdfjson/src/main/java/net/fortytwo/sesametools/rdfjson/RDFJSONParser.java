@@ -25,49 +25,23 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.RioSetting;
 import org.openrdf.rio.helpers.BasicParserSettings;
+import org.openrdf.rio.helpers.RDFParserBase;
 
 import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
 import com.github.ansell.sesamerioextensions.rdfjson.RDFJSON;
 
 /**
- * RDFParser implementation for the proposed RDF/JSON format (see
- * http://n2.talis.com/wiki/RDF_JSON_Specification)
+ * {@link RDFParser} implementation for the RDF/JSON format
  * 
- * @author Joshua Shinavier (http://fortytwo.net). Builds on code by Hannes Ebner
+ * @author Peter Ansell p_ansell@yahoo.com
  */
 @SuppressWarnings("unused")
-public class RDFJSONParser implements RDFParser
+public class RDFJSONParser extends RDFParserBase implements RDFParser
 {
-    
-    private ValueFactory valueFactory = ValueFactoryImpl.getInstance();
-    private RDFHandler rdfHandler;
-    private ParseErrorListener parseErrorListener;
-    private ParseLocationListener parseLocationListener;
-    private ParserConfig config = new ParserConfig();
-    
-    @Override
-    public ParserConfig getParserConfig()
-    {
-        return this.config;
-    }
-    
     @Override
     public RDFFormat getRDFFormat()
     {
         return RDFFormatExtensions.RDFJSONPREFERRED;
-    }
-    
-    @Override
-    public Collection<RioSetting<?>> getSupportedSettings()
-    {
-        final Collection<RioSetting<?>> result = new ArrayList<RioSetting<?>>(4);
-        
-        result.add(BasicParserSettings.DATATYPE_HANDLING);
-        result.add(BasicParserSettings.PRESERVE_BNODE_IDS);
-        result.add(BasicParserSettings.STOP_AT_FIRST_ERROR);
-        result.add(BasicParserSettings.VERIFY_DATA);
-        
-        return result;
     }
     
     @Override
@@ -92,57 +66,4 @@ public class RDFJSONParser implements RDFParser
         this.rdfHandler.endRDF();
     }
     
-    @Override
-    public void setDatatypeHandling(final DatatypeHandling datatypeHandling)
-    {
-        this.config.set(BasicParserSettings.DATATYPE_HANDLING, datatypeHandling);
-    }
-    
-    @Override
-    public void setParseErrorListener(final ParseErrorListener listener)
-    {
-        this.parseErrorListener = listener;
-    }
-    
-    @Override
-    public void setParseLocationListener(final ParseLocationListener listener)
-    {
-        this.parseLocationListener = listener;
-    }
-    
-    @Override
-    public void setParserConfig(final ParserConfig config)
-    {
-        this.config = config;
-    }
-    
-    @Override
-    public void setPreserveBNodeIDs(final boolean preserveBNodeIDs)
-    {
-        this.config.set(BasicParserSettings.PRESERVE_BNODE_IDS, preserveBNodeIDs);
-    }
-    
-    @Override
-    public void setRDFHandler(final RDFHandler handler)
-    {
-        this.rdfHandler = handler;
-    }
-    
-    @Override
-    public void setStopAtFirstError(final boolean stopAtFirstError)
-    {
-        this.config.set(BasicParserSettings.STOP_AT_FIRST_ERROR, stopAtFirstError);
-    }
-    
-    @Override
-    public void setValueFactory(final ValueFactory valueFactory)
-    {
-        this.valueFactory = valueFactory;
-    }
-    
-    @Override
-    public void setVerifyData(final boolean verifyData)
-    {
-        this.config.set(BasicParserSettings.VERIFY_DATA, verifyData);
-    }
 }
