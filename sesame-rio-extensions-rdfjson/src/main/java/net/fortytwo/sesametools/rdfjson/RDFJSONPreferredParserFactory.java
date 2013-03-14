@@ -19,7 +19,7 @@ public class RDFJSONPreferredParserFactory implements RDFParserFactory
     @Override
     public RDFParser getParser()
     {
-        return new RDFJSONParser();
+        return new RDFJSONParser(RDFFormatExtensions.RDFJSONPREFERRED);
     }
     
     @Override

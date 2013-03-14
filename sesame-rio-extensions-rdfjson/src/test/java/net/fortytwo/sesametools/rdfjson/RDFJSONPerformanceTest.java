@@ -4,7 +4,6 @@
 package net.fortytwo.sesametools.rdfjson;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openrdf.model.impl.LinkedHashModel;

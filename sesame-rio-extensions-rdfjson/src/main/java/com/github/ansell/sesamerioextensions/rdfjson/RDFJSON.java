@@ -2,13 +2,8 @@ package com.github.ansell.sesamerioextensions.rdfjson;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import org.openrdf.model.BNode;
@@ -18,8 +13,6 @@ import org.openrdf.model.Resource;
 import org.openrdf.model.URI;
 import org.openrdf.model.Value;
 import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.LinkedHashModel;
-import org.openrdf.model.impl.ValueFactoryImpl;
 import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
@@ -28,7 +21,6 @@ import org.openrdf.rio.helpers.BasicWriterSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -61,91 +53,8 @@ public class RDFJSON
         // Disable features that may work for most JSON where the field names are in limited supply,
         // but does not work for RDF/JSON where a wide range of URIs are used for subjects and
         // predicates
-        JSON_FACTORY.disable(JsonFactory.Feature.INTERN_FIELD_NAMES);
-        JSON_FACTORY.disable(JsonFactory.Feature.CANONICALIZE_FIELD_NAMES);
-    }
-    
-    /**
-     * Helper method to reduce complexity of the JSON serialisation algorithm
-     * 
-     * Any null contexts will only be serialised to JSON if there are also non-null contexts in the
-     * contexts array
-     * 
-     * @param object
-     *            The RDF value to serialise
-     * @param valueArray
-     *            The JSON Array to serialise the object to
-     * @param contexts
-     *            The set of contexts that are relevant to this object, including null contexts as
-     *            they are found.
-     * @throws IOException
-     * @throws JsonGenerationException
-     * @throws JSONException
-     */
-    private static void writeObject(final Value object, Set<Resource> contexts, final JsonGenerator jg)
-        throws JsonGenerationException, IOException
-    {
-        jg.writeStartObject();
-        if(object instanceof Literal)
-        {
-            // System.err.println("Writing literal: " + object.stringValue());
-            jg.writeObjectField(STRING_VALUE, object.stringValue());
-            
-            jg.writeObjectField(STRING_TYPE, RDFJSON.STRING_LITERAL);
-            final Literal l = (Literal)object;
-            
-            if(l.getLanguage() != null)
-            {
-                jg.writeObjectField(STRING_LANG, l.getLanguage());
-            }
-            
-            if(l.getDatatype() != null)
-            {
-                jg.writeObjectField(STRING_DATATYPE, l.getDatatype().stringValue());
-            }
-        }
-        else if(object instanceof BNode)
-        {
-            // System.err.println("Writing bnode: " + object.stringValue());
-            jg.writeObjectField(STRING_VALUE, RDFJSON.resourceToString((BNode)object));
-            
-            jg.writeObjectField(STRING_TYPE, RDFJSON.STRING_BNODE);
-        }
-        else if(object instanceof URI)
-        {
-            // System.err.println("Writing uri: " + object.stringValue());
-            jg.writeObjectField(STRING_VALUE, RDFJSON.resourceToString((URI)object));
-            
-            jg.writeObjectField(STRING_TYPE, RDFJSON.STRING_URI);
-        }
-        
-        // net.sf.json line
-        // if (contexts.size() > 0 && !(contexts.size() == 1 && contexts.contains(null)))
-        // org.json line
-        // if(contexts.length() > 0 && !(contexts.length() == 1 && contexts.isNull(0)))
-        
-        // if there is a context, and null is not the only context,
-        // then, output the contexts for this object
-        // Null context, or inherited from a document context, is the assumed value for the context
-        // in this case
-        if(contexts != null && !contexts.isEmpty() && !(contexts.size() == 1 && contexts.iterator().next() == null))
-        {
-            jg.writeArrayFieldStart(STRING_GRAPHS);
-            for(Resource nextContext : contexts)
-            {
-                if(nextContext == null)
-                {
-                    jg.writeNull();
-                }
-                else
-                {
-                    jg.writeString(nextContext.stringValue());
-                }
-            }
-            jg.writeEndArray();
-        }
-        
-        jg.writeEndObject();
+        RDFJSON.JSON_FACTORY.disable(JsonFactory.Feature.INTERN_FIELD_NAMES);
+        RDFJSON.JSON_FACTORY.disable(JsonFactory.Feature.CANONICALIZE_FIELD_NAMES);
     }
     
     /**
@@ -160,15 +69,16 @@ public class RDFJSON
      * @throws IOException
      * @throws JsonGenerationException
      */
-    public static void modelToRdfJson(final Model graph, Writer writer) throws JsonGenerationException, IOException
+    public static void modelToRdfJson(final Model graph, final Writer writer) throws JsonGenerationException,
+        IOException
     {
-        modelToRdfJson(graph, writer, new WriterConfig());
+        RDFJSON.modelToRdfJson(graph, writer, new WriterConfig());
     }
     
-    public static void modelToRdfJson(Model graph, Writer writer, WriterConfig writerConfig)
+    public static void modelToRdfJson(final Model graph, final Writer writer, final WriterConfig writerConfig)
         throws JsonGenerationException, IOException
     {
-        JsonGenerator jg = JSON_FACTORY.createJsonGenerator(writer);
+        final JsonGenerator jg = RDFJSON.JSON_FACTORY.createJsonGenerator(writer);
         if(writerConfig.get(BasicWriterSettings.PRETTY_PRINT))
         {
             // By default Jackson does not pretty print, so enable this unless PRETTY_PRINT setting
@@ -215,7 +125,7 @@ public class RDFJSON
         
         try
         {
-            jp = JSON_FACTORY.createJsonParser(json);
+            jp = RDFJSON.JSON_FACTORY.createJsonParser(json);
             if(jp.nextToken() != JsonToken.START_OBJECT)
             {
                 throw new RDFParseException("Expected RDF/JSON document to start with an Object", jp
@@ -265,12 +175,12 @@ public class RDFJSON
                         String nextType = null;
                         String nextDatatype = null;
                         String nextLanguage = null;
-                        Set<String> nextContexts = new HashSet<String>(2);
+                        final Set<String> nextContexts = new HashSet<String>(2);
                         
                         while(jp.nextToken() != JsonToken.END_OBJECT)
                         {
-                            String fieldName = jp.getCurrentName();
-                            if(STRING_VALUE.equals(fieldName))
+                            final String fieldName = jp.getCurrentName();
+                            if(RDFJSON.STRING_VALUE.equals(fieldName))
                             {
                                 if(nextValue != null)
                                 {
@@ -284,7 +194,7 @@ public class RDFJSON
                                 nextValue = jp.getText();
                                 // System.out.println("value='" + nextValue + "'");
                             }
-                            else if(STRING_TYPE.equals(fieldName))
+                            else if(RDFJSON.STRING_TYPE.equals(fieldName))
                             {
                                 if(nextType != null)
                                 {
@@ -298,7 +208,7 @@ public class RDFJSON
                                 nextType = jp.getText();
                                 // System.out.println("fieldtype=" + nextType);
                             }
-                            else if(STRING_LANG.equals(fieldName))
+                            else if(RDFJSON.STRING_LANG.equals(fieldName))
                             {
                                 if(nextLanguage != null)
                                 {
@@ -312,7 +222,7 @@ public class RDFJSON
                                 nextLanguage = jp.getText();
                                 // System.out.println("language=" + nextLanguage);
                             }
-                            else if(STRING_DATATYPE.equals(fieldName))
+                            else if(RDFJSON.STRING_DATATYPE.equals(fieldName))
                             {
                                 if(nextDatatype != null)
                                 {
@@ -326,7 +236,7 @@ public class RDFJSON
                                 nextDatatype = jp.getText();
                                 // System.out.println("datatype=<" + nextDatatype + ">");
                             }
-                            else if(STRING_GRAPHS.equals(fieldName))
+                            else if(RDFJSON.STRING_GRAPHS.equals(fieldName))
                             {
                                 if(jp.nextToken() != JsonToken.START_ARRAY)
                                 {
@@ -336,7 +246,7 @@ public class RDFJSON
                                 
                                 while(jp.nextToken() != JsonToken.END_ARRAY)
                                 {
-                                    String nextGraph = jp.getText();
+                                    final String nextGraph = jp.getText();
                                     // System.out.println("context=<" + nextGraph + ">");
                                     
                                     nextContexts.add(nextGraph);
@@ -392,7 +302,7 @@ public class RDFJSON
                         
                         if(!nextContexts.isEmpty())
                         {
-                            for(String nextContext : nextContexts)
+                            for(final String nextContext : nextContexts)
                             {
                                 // Note: any nulls here will result in statements in the default
                                 // context.
@@ -411,7 +321,7 @@ public class RDFJSON
                 }
             }
         }
-        catch(IOException e)
+        catch(final IOException e)
         {
             if(jp != null)
             {
@@ -431,7 +341,7 @@ public class RDFJSON
                 {
                     jp.close();
                 }
-                catch(IOException e)
+                catch(final IOException e)
                 {
                     throw new RDFParseException("Found exception while closing JSON parser", e, jp.getCurrentLocation()
                             .getLineNr(), jp.getCurrentLocation().getColumnNr());
@@ -458,6 +368,89 @@ public class RDFJSON
         {
             return "_:" + ((BNode)uriOrBnode).getID();
         }
+    }
+    
+    /**
+     * Helper method to reduce complexity of the JSON serialisation algorithm
+     * 
+     * Any null contexts will only be serialised to JSON if there are also non-null contexts in the
+     * contexts array
+     * 
+     * @param object
+     *            The RDF value to serialise
+     * @param valueArray
+     *            The JSON Array to serialise the object to
+     * @param contexts
+     *            The set of contexts that are relevant to this object, including null contexts as
+     *            they are found.
+     * @throws IOException
+     * @throws JsonGenerationException
+     * @throws JSONException
+     */
+    private static void writeObject(final Value object, final Set<Resource> contexts, final JsonGenerator jg)
+        throws JsonGenerationException, IOException
+    {
+        jg.writeStartObject();
+        if(object instanceof Literal)
+        {
+            // System.err.println("Writing literal: " + object.stringValue());
+            jg.writeObjectField(RDFJSON.STRING_VALUE, object.stringValue());
+            
+            jg.writeObjectField(RDFJSON.STRING_TYPE, RDFJSON.STRING_LITERAL);
+            final Literal l = (Literal)object;
+            
+            if(l.getLanguage() != null)
+            {
+                jg.writeObjectField(RDFJSON.STRING_LANG, l.getLanguage());
+            }
+            
+            if(l.getDatatype() != null)
+            {
+                jg.writeObjectField(RDFJSON.STRING_DATATYPE, l.getDatatype().stringValue());
+            }
+        }
+        else if(object instanceof BNode)
+        {
+            // System.err.println("Writing bnode: " + object.stringValue());
+            jg.writeObjectField(RDFJSON.STRING_VALUE, RDFJSON.resourceToString((BNode)object));
+            
+            jg.writeObjectField(RDFJSON.STRING_TYPE, RDFJSON.STRING_BNODE);
+        }
+        else if(object instanceof URI)
+        {
+            // System.err.println("Writing uri: " + object.stringValue());
+            jg.writeObjectField(RDFJSON.STRING_VALUE, RDFJSON.resourceToString((URI)object));
+            
+            jg.writeObjectField(RDFJSON.STRING_TYPE, RDFJSON.STRING_URI);
+        }
+        
+        // net.sf.json line
+        // if (contexts.size() > 0 && !(contexts.size() == 1 && contexts.contains(null)))
+        // org.json line
+        // if(contexts.length() > 0 && !(contexts.length() == 1 && contexts.isNull(0)))
+        
+        // if there is a context, and null is not the only context,
+        // then, output the contexts for this object
+        // Null context, or inherited from a document context, is the assumed value for the context
+        // in this case
+        if(contexts != null && !contexts.isEmpty() && !(contexts.size() == 1 && contexts.iterator().next() == null))
+        {
+            jg.writeArrayFieldStart(RDFJSON.STRING_GRAPHS);
+            for(final Resource nextContext : contexts)
+            {
+                if(nextContext == null)
+                {
+                    jg.writeNull();
+                }
+                else
+                {
+                    jg.writeString(nextContext.stringValue());
+                }
+            }
+            jg.writeEndArray();
+        }
+        
+        jg.writeEndObject();
     }
     
 }

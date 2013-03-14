@@ -25,7 +25,7 @@ import org.openrdf.rio.turtle.TurtleWriter;
  */
 public final class RDFJSONTestUtils
 {
-    public static final void parseJsonAndWriteJson(final String fileName, Model results) throws Exception
+    public static final void parseJsonAndWriteJson(final String fileName, final Model results) throws Exception
     {
         final RDFJSONParser p = new RDFJSONParser();
         final Writer stringWriter = new StringWriter();
@@ -125,7 +125,7 @@ public final class RDFJSONTestUtils
         }
     }
     
-    public static final void parseXMLAndWriteJson(final String fileName, Model results) throws Exception
+    public static final void parseXMLAndWriteJson(final String fileName, final Model results) throws Exception
     {
         final RDFParser p = new RDFXMLParser();
         final Writer stringWriter = new StringWriter();

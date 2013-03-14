@@ -5,26 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collection;
 
-import org.openrdf.model.Model;
-import org.openrdf.model.Statement;
-import org.openrdf.model.ValueFactory;
-import org.openrdf.model.impl.ValueFactoryImpl;
-import org.openrdf.rio.ParseErrorListener;
-import org.openrdf.rio.ParseLocationListener;
-import org.openrdf.rio.ParserConfig;
 import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandler;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.RDFParser;
-import org.openrdf.rio.RioSetting;
-import org.openrdf.rio.helpers.BasicParserSettings;
 import org.openrdf.rio.helpers.RDFParserBase;
 
 import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
@@ -38,10 +24,22 @@ import com.github.ansell.sesamerioextensions.rdfjson.RDFJSON;
 @SuppressWarnings("unused")
 public class RDFJSONParser extends RDFParserBase implements RDFParser
 {
+    private final RDFFormat actualFormat;
+    
+    public RDFJSONParser()
+    {
+        this.actualFormat = RDFFormatExtensions.RDFJSONPREFERRED;
+    }
+    
+    public RDFJSONParser(final RDFFormat actualFormat)
+    {
+        this.actualFormat = actualFormat;
+    }
+    
     @Override
     public RDFFormat getRDFFormat()
     {
-        return RDFFormatExtensions.RDFJSONPREFERRED;
+        return this.actualFormat;
     }
     
     @Override

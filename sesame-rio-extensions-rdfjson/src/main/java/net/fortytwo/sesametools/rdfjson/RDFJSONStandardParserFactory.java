@@ -17,7 +17,7 @@ public class RDFJSONStandardParserFactory implements RDFParserFactory
     @Override
     public RDFParser getParser()
     {
-        return new RDFJSONParser();
+        return new RDFJSONParser(RDFFormat.RDFJSON);
     }
     
     @Override

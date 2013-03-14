@@ -3,9 +3,6 @@ package net.fortytwo.sesametools.rdfjson;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.Iterator;
-
-import net.fortytwo.sesametools.rdfjson.RDFJSONTestConstants.FOAF;
 
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -14,8 +11,6 @@ import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.util.ModelUtil;
-import org.openrdf.model.vocabulary.OWL;
-import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.rio.helpers.StatementCollector;
 
 /**
@@ -86,6 +81,16 @@ public class RDFJSONWriterTest
     }
     
     @Test
+    public void testJsonParseRdfJsonWrite() throws Exception
+    {
+        final Model model = new LinkedHashModel();
+        
+        RDFJSONTestUtils.parseJsonAndWriteJson("example2.json", model);
+        
+        Assert.assertEquals(6, model.size());
+    }
+    
+    @Test
     public void testRdfJsonParseRdfJsonWrite() throws Exception
     {
         final RDFJSONParser p = new RDFJSONParser();
@@ -144,21 +149,11 @@ public class RDFJSONWriterTest
     @Test
     public void testRdfXmlParseRdfJsonWrite() throws Exception
     {
-        Model model = new LinkedHashModel();
+        final Model model = new LinkedHashModel();
         
         RDFJSONTestUtils.parseXMLAndWriteJson("example3.xml", model);
         
         Assert.assertEquals(5, model.size());
-    }
-    
-    @Test
-    public void testJsonParseRdfJsonWrite() throws Exception
-    {
-        Model model = new LinkedHashModel();
-        
-        RDFJSONTestUtils.parseJsonAndWriteJson("example2.json", model);
-        
-        Assert.assertEquals(6, model.size());
     }
     
 }

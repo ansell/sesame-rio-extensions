@@ -23,14 +23,12 @@ import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
 import com.github.ansell.sesamerioextensions.rdfjson.RDFJSON;
 
 /**
- * RDFWriter implementation for the proposed RDF/JSON format (see
- * http://n2.talis.com/wiki/RDF_JSON_Specification)
+ * {@link RDFWriter} implementation for the RDF/JSON format
  * 
- * @author Joshua Shinavier (http://fortytwo.net). Builds on code by Hannes Ebner
+ * @author Peter Ansell p_ansell@yahoo.com
  */
 public class RDFJSONWriter extends RDFWriterBase implements RDFWriter
 {
-    
     private final Writer writer;
     private Model graph;
     
@@ -66,6 +64,16 @@ public class RDFJSONWriter extends RDFWriterBase implements RDFWriter
     }
     
     @Override
+    public Collection<RioSetting<?>> getSupportedSettings()
+    {
+        final Set<RioSetting<?>> results = new HashSet<RioSetting<?>>(super.getSupportedSettings());
+        
+        results.add(BasicWriterSettings.PRETTY_PRINT);
+        
+        return results;
+    }
+    
+    @Override
     public void handleComment(final String comment) throws RDFHandlerException
     {
         // Comments are ignored.
@@ -80,27 +88,13 @@ public class RDFJSONWriter extends RDFWriterBase implements RDFWriter
     @Override
     public void handleStatement(final Statement statement) throws RDFHandlerException
     {
-        // System.out.println("got it: " + statement);
         this.graph.add(statement);
     }
     
     @Override
     public void startRDF() throws RDFHandlerException
     {
-        // this.graph = new TreeSet<Statement>(new StatementComparator());
-        // TreeModel extends SortedSet<Statement>, which is what TreeSet<Statement> was being used
-        // for previously
         this.graph = new TreeModel();
-    }
-    
-    @Override
-    public Collection<RioSetting<?>> getSupportedSettings()
-    {
-        Set<RioSetting<?>> results = new HashSet<RioSetting<?>>(super.getSupportedSettings());
-        
-        results.add(BasicWriterSettings.PRETTY_PRINT);
-        
-        return results;
     }
     
 }

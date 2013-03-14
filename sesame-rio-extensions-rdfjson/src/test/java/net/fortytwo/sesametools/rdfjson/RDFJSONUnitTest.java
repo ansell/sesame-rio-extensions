@@ -8,7 +8,6 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import java.util.Iterator;
 
 import org.junit.After;
@@ -191,7 +190,7 @@ public class RDFJSONUnitTest
     {
         this.testInputFile = "example0.json";
         
-        Model rdfJsonToGraph = new LinkedHashModel();
+        final Model rdfJsonToGraph = new LinkedHashModel();
         
         RDFJSON.rdfJsonToHandler(new InputStreamReader(this.getClass().getResourceAsStream(this.testInputFile),
                 StandardCharsets.UTF_8), new StatementCollector(rdfJsonToGraph), ValueFactoryImpl.getInstance());
@@ -211,7 +210,7 @@ public class RDFJSONUnitTest
     {
         this.testInputFile = "example5.json";
         
-        Model rdfJsonToGraph = new LinkedHashModel();
+        final Model rdfJsonToGraph = new LinkedHashModel();
         
         RDFJSON.rdfJsonToHandler(new InputStreamReader(this.getClass().getResourceAsStream(this.testInputFile),
                 StandardCharsets.UTF_8), new StatementCollector(rdfJsonToGraph), ValueFactoryImpl.getInstance());
