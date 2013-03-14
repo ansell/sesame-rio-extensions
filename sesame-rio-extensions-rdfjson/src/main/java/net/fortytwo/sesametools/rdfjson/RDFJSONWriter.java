@@ -16,13 +16,11 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.RioSetting;
-import org.openrdf.rio.WriterConfig;
 import org.openrdf.rio.helpers.BasicWriterSettings;
 import org.openrdf.rio.helpers.RDFWriterBase;
 
-import se.kmr.scam.rest.util.RDFJSON;
-
 import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
+import com.github.ansell.sesamerioextensions.rdfjson.RDFJSON;
 
 /**
  * RDFWriter implementation for the proposed RDF/JSON format (see
@@ -49,9 +47,10 @@ public class RDFJSONWriter extends RDFWriterBase implements RDFWriter
     @Override
     public void endRDF() throws RDFHandlerException
     {
-        RDFJSON.modelToRdfJson(this.graph, this.writer);
         try
         {
+            RDFJSON.modelToRdfJson(this.graph, this.writer);
+            
             this.writer.flush();
         }
         catch(final IOException e)
@@ -93,7 +92,7 @@ public class RDFJSONWriter extends RDFWriterBase implements RDFWriter
         // for previously
         this.graph = new TreeModel();
     }
-
+    
     @Override
     public Collection<RioSetting<?>> getSupportedSettings()
     {
@@ -103,5 +102,5 @@ public class RDFJSONWriter extends RDFWriterBase implements RDFWriter
         
         return results;
     }
-
+    
 }

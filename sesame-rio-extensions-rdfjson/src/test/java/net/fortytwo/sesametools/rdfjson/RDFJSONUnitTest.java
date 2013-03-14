@@ -4,14 +4,13 @@
 package net.fortytwo.sesametools.rdfjson;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.apache.commons.io.IOUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,12 +19,15 @@ import org.openrdf.model.BNode;
 import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
+import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.impl.TreeModel;
 import org.openrdf.model.impl.ValueFactoryImpl;
+import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.helpers.StatementCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import se.kmr.scam.rest.util.RDFJSON;
+import com.github.ansell.sesamerioextensions.rdfjson.RDFJSON;
 
 /**
  * @author Peter Ansell p_ansell@yahoo.com
@@ -68,7 +70,7 @@ public class RDFJSONUnitTest
      * @throws JSONException
      */
     @Test
-    public void testModelToRdfJsonPreorderedSetOfStatementWriter() throws JSONException
+    public void testModelToRdfJsonPreorderedSetOfStatementWriter() throws Exception
     {
         // final Set<Statement> testStatements = new TreeSet<Statement>(new StatementComparator());
         final Model testStatements = new TreeModel();
@@ -133,10 +135,7 @@ public class RDFJSONUnitTest
         Assert.assertEquals(testStatement9, testStatementIterator.next());
         Assert.assertTrue(testStatementIterator.hasNext());
         
-        final Writer testWriter2 = RDFJSON.modelToRdfJson(testStatements, this.testWriter);
-        
-        // The returned writer should be the same as the one that was sent in
-        Assert.assertEquals(this.testWriter, testWriter2);
+        RDFJSON.modelToRdfJson(testStatements, this.testWriter);
         
         this.testOutput = this.testWriter.toString();
         
@@ -162,31 +161,51 @@ public class RDFJSONUnitTest
         Assert.assertTrue(firstValue > firstBlankNode);
         
         // Do a quick check to see if the testOutput is valid JSON
-        final JSONObject testJSONObject = new JSONObject(this.testOutput);
         
-        Assert.assertNotNull(testJSONObject);
-        Assert.assertTrue(testJSONObject.length() > 0);
-        Assert.assertTrue(testJSONObject.names().length() > 0);
-        Assert.assertTrue(testJSONObject.keys().hasNext());
+        // FIXME: TODO: Test using Jackson
+        Assert.fail("TODO: Implement me using Jackson");
+        // final JSONObject testJSONObject = new JSONObject(this.testOutput);
+        
+        // Assert.assertNotNull(testJSONObject);
+        // Assert.assertTrue(testJSONObject.length() > 0);
+        // Assert.assertTrue(testJSONObject.names().length() > 0);
+        // Assert.assertTrue(testJSONObject.keys().hasNext());
     }
     
     /**
      * Test method for {@link se.kmr.scam.rest.util.RDFJSON#rdfJsonToGraph(java.lang.String)}.
      * 
      * @throws IOException
+     * @throws RDFParseException
      */
     @Test
-    public void testRdfJsonToGraph() throws IOException
+    public void testRdfJsonToGraph0() throws IOException, RDFParseException
     {
         this.testInputFile = "example0.json";
         
-        this.testInput = IOUtils.toString(this.getClass().getResourceAsStream(this.testInputFile), "utf-8");
+        Model rdfJsonToGraph = new LinkedHashModel();
         
-        Assert.assertNotNull(this.testInput);
+        RDFJSON.rdfJsonToHandler(new InputStreamReader(this.getClass().getResourceAsStream(this.testInputFile),
+                StandardCharsets.UTF_8), new StatementCollector(rdfJsonToGraph));
         
-        Assert.assertTrue(this.testInput.length() > 0);
+        Assert.assertEquals(12, rdfJsonToGraph.size());
+    }
+    
+    /**
+     * Test method for {@link se.kmr.scam.rest.util.RDFJSON#rdfJsonToGraph(java.lang.String)}.
+     * 
+     * @throws IOException
+     * @throws RDFParseException
+     */
+    @Test
+    public void testRdfJsonToGraph5() throws IOException, RDFParseException
+    {
+        this.testInputFile = "example5.json";
         
-        final Collection<Statement> rdfJsonToGraph = RDFJSON.rdfJsonToGraph(this.testInput);
+        Model rdfJsonToGraph = new LinkedHashModel();
+        
+        RDFJSON.rdfJsonToHandler(new InputStreamReader(this.getClass().getResourceAsStream(this.testInputFile),
+                StandardCharsets.UTF_8), new StatementCollector(rdfJsonToGraph));
         
         Assert.assertEquals(12, rdfJsonToGraph.size());
     }

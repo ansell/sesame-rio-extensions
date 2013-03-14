@@ -25,9 +25,8 @@ import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.RioSetting;
 import org.openrdf.rio.helpers.BasicParserSettings;
 
-import se.kmr.scam.rest.util.RDFJSON;
-
 import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
+import com.github.ansell.sesamerioextensions.rdfjson.RDFJSON;
 
 /**
  * RDFParser implementation for the proposed RDF/JSON format (see
@@ -87,19 +86,8 @@ public class RDFJSONParser implements RDFParser
             throw new IllegalStateException("RDF handler has not been set");
         }
         
-        final String s = this.toString(reader);
-        final Model g = RDFJSON.rdfJsonToGraph(s);
-        
-        if(g == null)
-        {
-            throw new RDFParseException("Could not parse JSON RDF Graph");
-        }
-        
         this.rdfHandler.startRDF();
-        for(final Statement statement : g)
-        {
-            this.rdfHandler.handleStatement(statement);
-        }
+        RDFJSON.rdfJsonToHandler(reader, this.rdfHandler);
         this.rdfHandler.endRDF();
     }
     
@@ -155,18 +143,5 @@ public class RDFJSONParser implements RDFParser
     public void setVerifyData(final boolean verifyData)
     {
         this.config.set(BasicParserSettings.VERIFY_DATA, verifyData);
-    }
-    
-    private String toString(final Reader reader) throws IOException
-    {
-        final Writer writer = new StringWriter();
-        
-        final char[] buffer = new char[1024];
-        int n;
-        while((n = reader.read(buffer)) != -1)
-        {
-            writer.write(buffer, 0, n);
-        }
-        return writer.toString();
     }
 }

@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.json.JSONObject;
 import org.junit.Assert;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.RDFWriter;
@@ -22,7 +21,7 @@ import org.openrdf.rio.turtle.TurtleWriter;
  */
 public final class RDFJSONTestUtils
 {
-    public static final JSONObject parseAndWrite(final String fileName) throws Exception
+    public static final String parseAndWrite(final String fileName) throws Exception
     {
         final RDFJSONParser p = new RDFJSONParser();
         final Writer stringWriter = new StringWriter();
@@ -34,7 +33,8 @@ public final class RDFJSONTestUtils
         try
         {
             p.parse(in, RDFJSONTestConstants.BASE_URI);
-            return new JSONObject(stringWriter.toString());
+            return stringWriter.toString();
+            // return new JSONObject(stringWriter.toString());
         }
         finally
         {
@@ -61,7 +61,7 @@ public final class RDFJSONTestUtils
         }
     }
     
-    public static JSONObject parseRdfXmlAndWriteJson(final String fileName) throws Exception
+    public static String parseRdfXmlAndWriteJson(final String fileName) throws Exception
     {
         final RDFParser p = new RDFXMLParser();
         final Writer stringWriter = new StringWriter();
@@ -72,7 +72,7 @@ public final class RDFJSONTestUtils
         try
         {
             p.parse(in, RDFJSONTestConstants.BASE_URI);
-            return new JSONObject(stringWriter.toString());
+            return stringWriter.toString();
         }
         finally
         {
@@ -80,7 +80,7 @@ public final class RDFJSONTestUtils
         }
     }
     
-    public static final JSONObject parseTurtleAndWriteJson(final String fileName) throws Exception
+    public static final String parseTurtleAndWriteJson(final String fileName) throws Exception
     {
         final RDFParser p = new TurtleParser();
         final Writer stringWriter = new StringWriter();
@@ -91,7 +91,7 @@ public final class RDFJSONTestUtils
         try
         {
             p.parse(in, RDFJSONTestConstants.BASE_URI);
-            return new JSONObject(stringWriter.toString());
+            return stringWriter.toString();
         }
         finally
         {
@@ -118,7 +118,7 @@ public final class RDFJSONTestUtils
         }
     }
     
-    public static final JSONObject parseXMLAndWriteJson(final String fileName) throws Exception
+    public static final String parseXMLAndWriteJson(final String fileName) throws Exception
     {
         final RDFParser p = new RDFXMLParser();
         final Writer stringWriter = new StringWriter();
@@ -129,7 +129,7 @@ public final class RDFJSONTestUtils
         try
         {
             p.parse(in, RDFJSONTestConstants.BASE_URI);
-            return new JSONObject(stringWriter.toString());
+            return stringWriter.toString();
         }
         finally
         {

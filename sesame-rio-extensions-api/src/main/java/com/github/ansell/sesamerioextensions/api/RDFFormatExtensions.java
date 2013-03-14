@@ -29,7 +29,7 @@ public class RDFFormatExtensions extends RDFFormat
      * NOTE: This format supports both application/json as a content type, and .json as an
      * extension, in addition to the specification defined in RDFFormat.RDFJSON.
      * 
-     * @see http://dvcs.w3.org/hg/rdf/raw-file/default/rdf-json/index.html
+     * @see https://dvcs.w3.org/hg/rdf/raw-file/default/rdf-json/index.html
      */
     public static final RDFFormat RDFJSONPREFERRED = new RDFFormat("RDF/JSON-preferred", Arrays.asList("application/rdf+json",
             "application/json"), Charset.forName("UTF-8"), Arrays.asList("rj", "json"), false, true);
