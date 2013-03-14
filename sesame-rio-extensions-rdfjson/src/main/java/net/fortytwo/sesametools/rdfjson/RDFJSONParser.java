@@ -21,7 +21,6 @@ import com.github.ansell.sesamerioextensions.rdfjson.RDFJSON;
  * 
  * @author Peter Ansell p_ansell@yahoo.com
  */
-@SuppressWarnings("unused")
 public class RDFJSONParser extends RDFParserBase implements RDFParser
 {
     private final RDFFormat actualFormat;
@@ -43,15 +42,21 @@ public class RDFJSONParser extends RDFParserBase implements RDFParser
     }
     
     @Override
-    public void parse(final InputStream in, final String baseURI) throws IOException, RDFParseException,
+    public void parse(final InputStream inputStream, final String baseUri) throws IOException, RDFParseException,
         RDFHandlerException
     {
-        final Reader reader = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
-        this.parse(reader, baseURI);
+        if(null == this.rdfHandler)
+        {
+            throw new IllegalStateException("RDF handler has not been set");
+        }
+        
+        this.rdfHandler.startRDF();
+        RDFJSON.rdfJsonToHandler(inputStream, this.rdfHandler, this.valueFactory);
+        this.rdfHandler.endRDF();
     }
     
     @Override
-    public void parse(final Reader reader, final String baseURI) throws IOException, RDFParseException,
+    public void parse(final Reader reader, final String baseUri) throws IOException, RDFParseException,
         RDFHandlerException
     {
         if(null == this.rdfHandler)

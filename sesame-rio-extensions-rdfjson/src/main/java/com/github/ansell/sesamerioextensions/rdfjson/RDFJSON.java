@@ -1,6 +1,7 @@
 package com.github.ansell.sesamerioextensions.rdfjson;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 
@@ -114,12 +116,12 @@ public class RDFJSON
      * Implementation using the Jackson API.
      * 
      * @param json
-     *            The RDF/JSON string to be parsed.
+     *            The RDF/JSON input stream to be parsed.
      * @param handler
      *            The {@link RDFHandler} to handle the resulting triples.
      * @throws RDFHandlerException
      */
-    public static void rdfJsonToHandler(final Reader json, final RDFHandler handler, final ValueFactory vf)
+    public static void rdfJsonToHandler(final InputStream json, final RDFHandler handler, final ValueFactory vf)
         throws RDFParseException, RDFHandlerException
     {
         JsonParser jp = null;
@@ -127,200 +129,7 @@ public class RDFJSON
         try
         {
             jp = RDFJSON.JSON_FACTORY.createJsonParser(json);
-            if(jp.nextToken() != JsonToken.START_OBJECT)
-            {
-                throw new RDFParseException("Expected RDF/JSON document to start with an Object", jp
-                        .getCurrentLocation().getLineNr(), jp.getCurrentLocation().getColumnNr());
-            }
-            
-            while(jp.nextToken() != JsonToken.END_OBJECT)
-            {
-                
-                final String subjStr = jp.getCurrentName();
-                Resource subject = null;
-                
-                // System.err.println("subject=" + subjStr);
-                
-                subject = subjStr.startsWith("_:") ? vf.createBNode(subjStr.substring(2)) : vf.createURI(subjStr);
-                if(jp.nextToken() != JsonToken.START_OBJECT)
-                {
-                    throw new RDFParseException("Expected subject value to start with an Object", jp
-                            .getCurrentLocation().getLineNr(), jp.getCurrentLocation().getColumnNr());
-                }
-                
-                // iterate though the subject values until we get to the end of the object for this
-                // subject
-                while(jp.nextToken() != JsonToken.END_OBJECT)
-                {
-                    final String predStr = jp.getCurrentName();
-                    
-                    // System.err.println("predicate=" + predStr);
-                    
-                    final URI predicate = vf.createURI(predStr);
-                    if(jp.nextToken() != JsonToken.START_ARRAY)
-                    {
-                        throw new RDFParseException("Expected predicate value to start with an array", jp
-                                .getCurrentLocation().getLineNr(), jp.getCurrentLocation().getColumnNr());
-                    }
-                    
-                    while(jp.nextToken() != JsonToken.END_ARRAY)
-                    {
-                        if(jp.getCurrentToken() != JsonToken.START_OBJECT)
-                        {
-                            throw new RDFParseException("Expected object value to start with an Object: subject=<"
-                                    + subjStr + "> predicate=<" + predStr + ">", jp.getCurrentLocation().getLineNr(),
-                                    jp.getCurrentLocation().getColumnNr());
-                        }
-                        
-                        String nextValue = null;
-                        String nextType = null;
-                        String nextDatatype = null;
-                        String nextLanguage = null;
-                        final Set<String> nextContexts = new HashSet<String>(2);
-                        
-                        while(jp.nextToken() != JsonToken.END_OBJECT)
-                        {
-                            final String fieldName = jp.getCurrentName();
-                            if(RDFJSON.STRING_VALUE.equals(fieldName))
-                            {
-                                if(nextValue != null)
-                                {
-                                    throw new RDFParseException("Multiple values found for a single object: subject="
-                                            + subjStr + " predicate=" + predStr, jp.getCurrentLocation().getLineNr(),
-                                            jp.getCurrentLocation().getColumnNr());
-                                }
-                                
-                                jp.nextToken();
-                                
-                                nextValue = jp.getText();
-                                // System.out.println("value='" + nextValue + "'");
-                            }
-                            else if(RDFJSON.STRING_TYPE.equals(fieldName))
-                            {
-                                if(nextType != null)
-                                {
-                                    throw new RDFParseException("Multiple types found for single object: subject="
-                                            + subjStr + " predicate=" + predStr, jp.getCurrentLocation().getLineNr(),
-                                            jp.getCurrentLocation().getColumnNr());
-                                }
-                                
-                                jp.nextToken();
-                                
-                                nextType = jp.getText();
-                                // System.out.println("fieldtype=" + nextType);
-                            }
-                            else if(RDFJSON.STRING_LANG.equals(fieldName))
-                            {
-                                if(nextLanguage != null)
-                                {
-                                    throw new RDFParseException("Multiple languages found for single object: subject="
-                                            + subjStr + " predicate=" + predStr, jp.getCurrentLocation().getLineNr(),
-                                            jp.getCurrentLocation().getColumnNr());
-                                }
-                                
-                                jp.nextToken();
-                                
-                                nextLanguage = jp.getText();
-                                // System.out.println("language=" + nextLanguage);
-                            }
-                            else if(RDFJSON.STRING_DATATYPE.equals(fieldName))
-                            {
-                                if(nextDatatype != null)
-                                {
-                                    throw new RDFParseException("Multiple datatypes found for single object: subject="
-                                            + subjStr + " predicate=" + predStr, jp.getCurrentLocation().getLineNr(),
-                                            jp.getCurrentLocation().getColumnNr());
-                                }
-                                
-                                jp.nextToken();
-                                
-                                nextDatatype = jp.getText();
-                                // System.out.println("datatype=<" + nextDatatype + ">");
-                            }
-                            else if(RDFJSON.STRING_GRAPHS.equals(fieldName))
-                            {
-                                if(jp.nextToken() != JsonToken.START_ARRAY)
-                                {
-                                    throw new RDFParseException("Expected graphs to start with an array", jp
-                                            .getCurrentLocation().getLineNr(), jp.getCurrentLocation().getColumnNr());
-                                }
-                                
-                                while(jp.nextToken() != JsonToken.END_ARRAY)
-                                {
-                                    final String nextGraph = jp.getText();
-                                    // System.out.println("context=<" + nextGraph + ">");
-                                    
-                                    nextContexts.add(nextGraph);
-                                }
-                            }
-                            else
-                            {
-                                throw new RDFParseException("Unrecognised JSON field name for object: subject="
-                                        + subjStr + " predicate=" + predStr + " fieldname=" + fieldName, jp
-                                        .getCurrentLocation().getLineNr(), jp.getCurrentLocation().getColumnNr());
-                            }
-                        }
-                        
-                        Value object = null;
-                        
-                        if(nextType == null)
-                        {
-                            throw new RDFParseException("No type for object: subject=" + subjStr + " predicate="
-                                    + predStr, jp.getCurrentLocation().getLineNr(), jp.getCurrentLocation()
-                                    .getColumnNr());
-                        }
-                        
-                        if(nextValue == null)
-                        {
-                            throw new RDFParseException("No value for object: subject=" + subjStr + " predicate="
-                                    + predStr, jp.getCurrentLocation().getLineNr(), jp.getCurrentLocation()
-                                    .getColumnNr());
-                        }
-                        
-                        if(RDFJSON.STRING_LITERAL.equals(nextType))
-                        {
-                            if(nextLanguage != null)
-                            {
-                                object = vf.createLiteral(nextValue, nextLanguage);
-                            }
-                            else if(nextDatatype != null)
-                            {
-                                object = vf.createLiteral(nextValue, vf.createURI(nextDatatype));
-                            }
-                            else
-                            {
-                                object = vf.createLiteral(nextValue);
-                            }
-                        }
-                        else if(RDFJSON.STRING_BNODE.equals(nextType))
-                        {
-                            object = vf.createBNode(nextValue.substring(2));
-                        }
-                        else if(RDFJSON.STRING_URI.equals(nextType))
-                        {
-                            object = vf.createURI(nextValue);
-                        }
-                        
-                        if(!nextContexts.isEmpty())
-                        {
-                            for(final String nextContext : nextContexts)
-                            {
-                                // Note: any nulls here will result in statements in the default
-                                // context.
-                                // System.out.println("s = " + s);
-                                final Resource context =
-                                        nextContext.equals(RDFJSON.STRING_NULL) ? null : vf.createURI(nextContext);
-                                // System.out.println("context = " + context);
-                                handler.handleStatement(vf.createStatement(subject, predicate, object, context));
-                            }
-                        }
-                        else
-                        {
-                            handler.handleStatement(vf.createStatement(subject, predicate, object));
-                        }
-                    }
-                }
-            }
+            RDFJSON.rdfJsonToHandlerInternal(handler, vf, jp);
         }
         catch(final IOException e)
         {
@@ -346,6 +155,261 @@ public class RDFJSON
                 {
                     throw new RDFParseException("Found exception while closing JSON parser", e, jp.getCurrentLocation()
                             .getLineNr(), jp.getCurrentLocation().getColumnNr());
+                }
+            }
+        }
+    }
+    
+    /**
+     * Implementation using the Jackson API.
+     * 
+     * @param json
+     *            The RDF/JSON string to be parsed.
+     * @param handler
+     *            The {@link RDFHandler} to handle the resulting triples.
+     * @throws RDFHandlerException
+     */
+    public static void rdfJsonToHandler(final Reader json, final RDFHandler handler, final ValueFactory vf)
+        throws RDFParseException, RDFHandlerException
+    {
+        JsonParser jp = null;
+        
+        try
+        {
+            jp = RDFJSON.JSON_FACTORY.createJsonParser(json);
+            RDFJSON.rdfJsonToHandlerInternal(handler, vf, jp);
+        }
+        catch(final IOException e)
+        {
+            if(jp != null)
+            {
+                throw new RDFParseException(e, jp.getCurrentLocation().getLineNr(), jp.getCurrentLocation()
+                        .getColumnNr());
+            }
+            else
+            {
+                throw new RDFParseException(e);
+            }
+        }
+        finally
+        {
+            if(jp != null)
+            {
+                try
+                {
+                    jp.close();
+                }
+                catch(final IOException e)
+                {
+                    throw new RDFParseException("Found exception while closing JSON parser", e, jp.getCurrentLocation()
+                            .getLineNr(), jp.getCurrentLocation().getColumnNr());
+                }
+            }
+        }
+    }
+    
+    /**
+     * @param handler
+     * @param vf
+     * @param jp
+     * @throws IOException
+     * @throws JsonParseException
+     * @throws RDFParseException
+     * @throws RDFHandlerException
+     */
+    private static void rdfJsonToHandlerInternal(final RDFHandler handler, final ValueFactory vf, final JsonParser jp)
+        throws IOException, JsonParseException, RDFParseException, RDFHandlerException
+    {
+        if(jp.nextToken() != JsonToken.START_OBJECT)
+        {
+            throw new RDFParseException("Expected RDF/JSON document to start with an Object", jp.getCurrentLocation()
+                    .getLineNr(), jp.getCurrentLocation().getColumnNr());
+        }
+        
+        while(jp.nextToken() != JsonToken.END_OBJECT)
+        {
+            
+            final String subjStr = jp.getCurrentName();
+            Resource subject = null;
+            
+            // System.err.println("subject=" + subjStr);
+            
+            subject = subjStr.startsWith("_:") ? vf.createBNode(subjStr.substring(2)) : vf.createURI(subjStr);
+            if(jp.nextToken() != JsonToken.START_OBJECT)
+            {
+                throw new RDFParseException("Expected subject value to start with an Object", jp.getCurrentLocation()
+                        .getLineNr(), jp.getCurrentLocation().getColumnNr());
+            }
+            
+            // iterate though the subject values until we get to the end of the object for this
+            // subject
+            while(jp.nextToken() != JsonToken.END_OBJECT)
+            {
+                final String predStr = jp.getCurrentName();
+                
+                // System.err.println("predicate=" + predStr);
+                
+                final URI predicate = vf.createURI(predStr);
+                if(jp.nextToken() != JsonToken.START_ARRAY)
+                {
+                    throw new RDFParseException("Expected predicate value to start with an array", jp
+                            .getCurrentLocation().getLineNr(), jp.getCurrentLocation().getColumnNr());
+                }
+                
+                while(jp.nextToken() != JsonToken.END_ARRAY)
+                {
+                    if(jp.getCurrentToken() != JsonToken.START_OBJECT)
+                    {
+                        throw new RDFParseException("Expected object value to start with an Object: subject=<"
+                                + subjStr + "> predicate=<" + predStr + ">", jp.getCurrentLocation().getLineNr(), jp
+                                .getCurrentLocation().getColumnNr());
+                    }
+                    
+                    String nextValue = null;
+                    String nextType = null;
+                    String nextDatatype = null;
+                    String nextLanguage = null;
+                    final Set<String> nextContexts = new HashSet<String>(2);
+                    
+                    while(jp.nextToken() != JsonToken.END_OBJECT)
+                    {
+                        final String fieldName = jp.getCurrentName();
+                        if(RDFJSON.STRING_VALUE.equals(fieldName))
+                        {
+                            if(nextValue != null)
+                            {
+                                throw new RDFParseException("Multiple values found for a single object: subject="
+                                        + subjStr + " predicate=" + predStr, jp.getCurrentLocation().getLineNr(), jp
+                                        .getCurrentLocation().getColumnNr());
+                            }
+                            
+                            jp.nextToken();
+                            
+                            nextValue = jp.getText();
+                            // System.out.println("value='" + nextValue + "'");
+                        }
+                        else if(RDFJSON.STRING_TYPE.equals(fieldName))
+                        {
+                            if(nextType != null)
+                            {
+                                throw new RDFParseException("Multiple types found for single object: subject="
+                                        + subjStr + " predicate=" + predStr, jp.getCurrentLocation().getLineNr(), jp
+                                        .getCurrentLocation().getColumnNr());
+                            }
+                            
+                            jp.nextToken();
+                            
+                            nextType = jp.getText();
+                            // System.out.println("fieldtype=" + nextType);
+                        }
+                        else if(RDFJSON.STRING_LANG.equals(fieldName))
+                        {
+                            if(nextLanguage != null)
+                            {
+                                throw new RDFParseException("Multiple languages found for single object: subject="
+                                        + subjStr + " predicate=" + predStr, jp.getCurrentLocation().getLineNr(), jp
+                                        .getCurrentLocation().getColumnNr());
+                            }
+                            
+                            jp.nextToken();
+                            
+                            nextLanguage = jp.getText();
+                            // System.out.println("language=" + nextLanguage);
+                        }
+                        else if(RDFJSON.STRING_DATATYPE.equals(fieldName))
+                        {
+                            if(nextDatatype != null)
+                            {
+                                throw new RDFParseException("Multiple datatypes found for single object: subject="
+                                        + subjStr + " predicate=" + predStr, jp.getCurrentLocation().getLineNr(), jp
+                                        .getCurrentLocation().getColumnNr());
+                            }
+                            
+                            jp.nextToken();
+                            
+                            nextDatatype = jp.getText();
+                            // System.out.println("datatype=<" + nextDatatype + ">");
+                        }
+                        else if(RDFJSON.STRING_GRAPHS.equals(fieldName))
+                        {
+                            if(jp.nextToken() != JsonToken.START_ARRAY)
+                            {
+                                throw new RDFParseException("Expected graphs to start with an array", jp
+                                        .getCurrentLocation().getLineNr(), jp.getCurrentLocation().getColumnNr());
+                            }
+                            
+                            while(jp.nextToken() != JsonToken.END_ARRAY)
+                            {
+                                final String nextGraph = jp.getText();
+                                // System.out.println("context=<" + nextGraph + ">");
+                                
+                                nextContexts.add(nextGraph);
+                            }
+                        }
+                        else
+                        {
+                            throw new RDFParseException("Unrecognised JSON field name for object: subject=" + subjStr
+                                    + " predicate=" + predStr + " fieldname=" + fieldName, jp.getCurrentLocation()
+                                    .getLineNr(), jp.getCurrentLocation().getColumnNr());
+                        }
+                    }
+                    
+                    Value object = null;
+                    
+                    if(nextType == null)
+                    {
+                        throw new RDFParseException("No type for object: subject=" + subjStr + " predicate=" + predStr,
+                                jp.getCurrentLocation().getLineNr(), jp.getCurrentLocation().getColumnNr());
+                    }
+                    
+                    if(nextValue == null)
+                    {
+                        throw new RDFParseException(
+                                "No value for object: subject=" + subjStr + " predicate=" + predStr, jp
+                                        .getCurrentLocation().getLineNr(), jp.getCurrentLocation().getColumnNr());
+                    }
+                    
+                    if(RDFJSON.STRING_LITERAL.equals(nextType))
+                    {
+                        if(nextLanguage != null)
+                        {
+                            object = vf.createLiteral(nextValue, nextLanguage);
+                        }
+                        else if(nextDatatype != null)
+                        {
+                            object = vf.createLiteral(nextValue, vf.createURI(nextDatatype));
+                        }
+                        else
+                        {
+                            object = vf.createLiteral(nextValue);
+                        }
+                    }
+                    else if(RDFJSON.STRING_BNODE.equals(nextType))
+                    {
+                        object = vf.createBNode(nextValue.substring(2));
+                    }
+                    else if(RDFJSON.STRING_URI.equals(nextType))
+                    {
+                        object = vf.createURI(nextValue);
+                    }
+                    
+                    if(!nextContexts.isEmpty())
+                    {
+                        for(final String nextContext : nextContexts)
+                        {
+                            // Note: any nulls here will result in statements in the default
+                            // context.
+                            // System.out.println("s = " + s);
+                            final Resource context =
+                                    nextContext.equals(RDFJSON.STRING_NULL) ? null : vf.createURI(nextContext);
+                            // System.out.println("context = " + context);
+                            handler.handleStatement(vf.createStatement(subject, predicate, object, context));
+                        }
+                    }
+                    else
+                    {
+                        handler.handleStatement(vf.createStatement(subject, predicate, object));
+                    }
                 }
             }
         }
