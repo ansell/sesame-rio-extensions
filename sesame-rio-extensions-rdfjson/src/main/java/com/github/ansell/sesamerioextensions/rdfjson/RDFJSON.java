@@ -55,6 +55,7 @@ public class RDFJSON
         // predicates
         RDFJSON.JSON_FACTORY.disable(JsonFactory.Feature.INTERN_FIELD_NAMES);
         RDFJSON.JSON_FACTORY.disable(JsonFactory.Feature.CANONICALIZE_FIELD_NAMES);
+        RDFJSON.JSON_FACTORY.disable(JsonGenerator.Feature.AUTO_CLOSE_TARGET);
     }
     
     /**
