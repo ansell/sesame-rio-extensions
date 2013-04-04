@@ -8,6 +8,8 @@ import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
+import org.openrdf.rio.rdfjson.RDFJSONParser;
+import org.openrdf.rio.rdfjson.RDFJSONWriter;
 
 /**
  * @author Peter Ansell p_ansell@yahoo.com

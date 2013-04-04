@@ -26,6 +26,7 @@ import org.openrdf.rio.RDFParseException;
 import org.openrdf.rio.WriterConfig;
 import org.openrdf.rio.helpers.BasicWriterSettings;
 import org.openrdf.rio.helpers.StatementCollector;
+import org.openrdf.rio.rdfjson.RDFJSONUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

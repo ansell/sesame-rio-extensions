@@ -7,6 +7,7 @@ import org.kohsuke.MetaInfServices;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.RDFWriterFactory;
+import org.openrdf.rio.rdfjson.RDFJSONWriter;
 
 import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
 

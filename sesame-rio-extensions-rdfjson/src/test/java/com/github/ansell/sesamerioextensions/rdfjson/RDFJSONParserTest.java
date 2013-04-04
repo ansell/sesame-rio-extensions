@@ -16,6 +16,7 @@ import org.openrdf.model.vocabulary.OWL;
 import org.openrdf.model.vocabulary.RDF;
 import org.openrdf.model.vocabulary.XMLSchema;
 import org.openrdf.rio.helpers.StatementCollector;
+import org.openrdf.rio.rdfjson.RDFJSONParser;
 
 import com.github.ansell.sesamerioextensions.rdfjson.RDFJSONTestConstants.FOAF;
 
@@ -62,7 +63,7 @@ public class RDFJSONParserTest
         final Model model = new LinkedHashModel();
         p.setRDFHandler(new StatementCollector(model));
         
-        final InputStream in = RDFJSONParser.class.getResourceAsStream(fileName);
+        final InputStream in = this.getClass().getResourceAsStream(fileName);
         Assert.assertNotNull("Could not find test resource: " + fileName, in);
         try
         {

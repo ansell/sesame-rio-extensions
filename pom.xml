@@ -133,6 +133,11 @@
             	<artifactId>jackson-core</artifactId>
             	<version>2.1.4</version>
             </dependency>
+            <dependency>
+            	<groupId>org.openrdf.sesame</groupId>
+            	<artifactId>sesame-rio-rdfjson</artifactId>
+            	<version>${sesame.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

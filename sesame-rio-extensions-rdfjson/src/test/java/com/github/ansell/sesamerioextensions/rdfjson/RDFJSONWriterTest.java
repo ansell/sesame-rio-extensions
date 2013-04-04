@@ -12,6 +12,8 @@ import org.openrdf.model.Statement;
 import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.util.ModelUtil;
 import org.openrdf.rio.helpers.StatementCollector;
+import org.openrdf.rio.rdfjson.RDFJSONParser;
+import org.openrdf.rio.rdfjson.RDFJSONWriter;
 
 import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
 
@@ -99,7 +101,7 @@ public class RDFJSONWriterTest
         final Model model = new LinkedHashModel();
         p.setRDFHandler(new StatementCollector(model));
         
-        final InputStream in = RDFJSONParser.class.getResourceAsStream("example4.json");
+        final InputStream in = this.getClass().getResourceAsStream("example4.json");
         try
         {
             p.parse(in, RDFJSONTestConstants.BASE_URI);
