@@ -21,12 +21,17 @@ import org.openrdf.model.URI;
 import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.impl.TreeModel;
 import org.openrdf.model.impl.ValueFactoryImpl;
+import org.openrdf.model.util.ModelUtil;
+import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
+import org.openrdf.rio.RDFWriter;
+import org.openrdf.rio.Rio;
 import org.openrdf.rio.WriterConfig;
 import org.openrdf.rio.helpers.BasicWriterSettings;
 import org.openrdf.rio.helpers.StatementCollector;
 import org.openrdf.rio.rdfjson.RDFJSONUtility;
+import org.openrdf.rio.rdfjson.RDFJSONWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,7 +145,8 @@ public class RDFJSONUnitTest
         Assert.assertEquals(testStatement9, testStatementIterator.next());
         Assert.assertTrue(testStatementIterator.hasNext());
         
-        RDFJSONUtility.modelToRdfJson(testStatements, this.testWriter, this.testWriterConfig);
+        Rio.write(testStatements, testWriter, RDFFormat.RDFJSON);
+        // RDFJSONUtility.modelToRdfJson(testStatements, this.testWriter, this.testWriterConfig);
         
         this.testOutput = this.testWriter.toString();
         
@@ -158,7 +164,7 @@ public class RDFJSONUnitTest
         Assert.assertTrue(firstBlankNode > 0);
         
         // The first value after the first blank node should be a blank node identifier
-        final int firstValue = this.testOutput.indexOf("\"value\":\"_:", firstBlankNode);
+        final int firstValue = this.testOutput.indexOf("\"value\" : \"_:", firstBlankNode);
         
         Assert.assertTrue("A suitable blank node value was not found", firstValue > 0);
         
@@ -190,10 +196,13 @@ public class RDFJSONUnitTest
     {
         this.testInputFile = "example0.json";
         
-        final Model rdfJsonToGraph = new LinkedHashModel();
+        final Model rdfJsonToGraph =
+                Rio.parse(this.getClass().getResourceAsStream(this.testInputFile), "", RDFFormat.RDFJSON);
         
-        RDFJSONUtility.rdfJsonToHandler(new InputStreamReader(this.getClass().getResourceAsStream(this.testInputFile),
-                StandardCharsets.UTF_8), new StatementCollector(rdfJsonToGraph), ValueFactoryImpl.getInstance());
+        // RDFJSONUtility.rdfJsonToHandler(new
+        // InputStreamReader(this.getClass().getResourceAsStream(this.testInputFile),
+        // StandardCharsets.UTF_8), new StatementCollector(rdfJsonToGraph),
+        // ValueFactoryImpl.getInstance());
         
         Assert.assertEquals(12, rdfJsonToGraph.size());
     }
@@ -211,10 +220,13 @@ public class RDFJSONUnitTest
     {
         this.testInputFile = "example5.json";
         
-        final Model rdfJsonToGraph = new LinkedHashModel();
+        final Model rdfJsonToGraph =
+                Rio.parse(this.getClass().getResourceAsStream(this.testInputFile), "", RDFFormat.RDFJSON);
         
-        RDFJSONUtility.rdfJsonToHandler(new InputStreamReader(this.getClass().getResourceAsStream(this.testInputFile),
-                StandardCharsets.UTF_8), new StatementCollector(rdfJsonToGraph), ValueFactoryImpl.getInstance());
+        // RDFJSONUtility.rdfJsonToHandler(new
+        // InputStreamReader(this.getClass().getResourceAsStream(this.testInputFile),
+        // StandardCharsets.UTF_8), new StatementCollector(rdfJsonToGraph),
+        // ValueFactoryImpl.getInstance());
         
         Assert.assertEquals(1, rdfJsonToGraph.size());
     }
