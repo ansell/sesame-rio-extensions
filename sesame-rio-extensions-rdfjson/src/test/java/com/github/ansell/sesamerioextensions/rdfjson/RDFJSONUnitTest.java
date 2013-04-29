@@ -4,10 +4,8 @@
 package com.github.ansell.sesamerioextensions.rdfjson;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 
 import org.junit.After;
@@ -18,20 +16,15 @@ import org.openrdf.model.BNode;
 import org.openrdf.model.Model;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;
-import org.openrdf.model.impl.LinkedHashModel;
 import org.openrdf.model.impl.TreeModel;
 import org.openrdf.model.impl.ValueFactoryImpl;
-import org.openrdf.model.util.ModelUtil;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
-import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
 import org.openrdf.rio.WriterConfig;
 import org.openrdf.rio.helpers.BasicWriterSettings;
-import org.openrdf.rio.helpers.StatementCollector;
 import org.openrdf.rio.rdfjson.RDFJSONUtility;
-import org.openrdf.rio.rdfjson.RDFJSONWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,7 +138,7 @@ public class RDFJSONUnitTest
         Assert.assertEquals(testStatement9, testStatementIterator.next());
         Assert.assertTrue(testStatementIterator.hasNext());
         
-        Rio.write(testStatements, testWriter, RDFFormat.RDFJSON);
+        Rio.write(testStatements, this.testWriter, RDFFormat.RDFJSON);
         // RDFJSONUtility.modelToRdfJson(testStatements, this.testWriter, this.testWriterConfig);
         
         this.testOutput = this.testWriter.toString();

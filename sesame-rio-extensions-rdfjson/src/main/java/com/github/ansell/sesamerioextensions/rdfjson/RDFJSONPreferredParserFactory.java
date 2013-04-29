@@ -14,16 +14,19 @@ import com.github.ansell.sesamerioextensions.api.RDFFormatExtensions;
  * @author fkleedorfer
  */
 @MetaInfServices(RDFParserFactory.class)
-public class RDFJSONPreferredParserFactory implements RDFParserFactory {
-
-	@Override
-	public RDFParser getParser() {
-		return new RDFJSONParser(this.getRDFFormat());
-	}
-
-	@Override
-	public RDFFormat getRDFFormat() {
-		return RDFFormatExtensions.RDFJSONPREFERRED;
-	}
-
+public class RDFJSONPreferredParserFactory implements RDFParserFactory
+{
+    
+    @Override
+    public RDFParser getParser()
+    {
+        return new RDFJSONParser(this.getRDFFormat());
+    }
+    
+    @Override
+    public RDFFormat getRDFFormat()
+    {
+        return RDFFormatExtensions.RDFJSONPREFERRED;
+    }
+    
 }
