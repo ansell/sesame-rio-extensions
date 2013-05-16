@@ -71,6 +71,11 @@
         <maven>2.2.1</maven>
     </prerequisites>
 
+    <modules>
+        <module>api</module>
+        <module>rdfjson</module>
+    </modules>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -261,9 +266,4 @@
             </plugins>
         </pluginManagement>
     </build>
-
-    <modules>
-        <module>sesame-rio-extensions-rdfjson</module>
-        <module>sesame-rio-extensions-api</module>
-    </modules>
 </project>
